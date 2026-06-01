@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a maintainer workflow or report improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Maintainer workflow
+      description: What maintenance task would this improve?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence source
+      description: Which public repo data should the feature use?
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Desired output
+      description: What should the report, JSON, or Codex prompt include?
+    validations:
+      required: true
+

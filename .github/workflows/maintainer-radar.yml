@@ -1,0 +1,49 @@
+name: Maintainer Radar
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo:
+        description: "GitHub repository to audit, for example owner/repo."
+        required: false
+        default: ""
+      stale_days:
+        description: "Days without updates before an issue is considered stale."
+        required: false
+        default: "30"
+  schedule:
+    - cron: "17 8 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_REPO: ${{ github.event.inputs.target_repo || github.repository }}
+      STALE_DAYS: ${{ github.event.inputs.stale_days || '30' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install -e .
+      - name: Generate maintainer report
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p reports
+          oss-radar audit \
+            --repo "$TARGET_REPO" \
+            --stale-days "$STALE_DAYS" \
+            --output reports/maintainer-radar.md
+          oss-radar codex-prompts \
+            --repo "$TARGET_REPO" \
+            --output reports/codex-prompts.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: maintainer-radar-report
+          path: reports/
+

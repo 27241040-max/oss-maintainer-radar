@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oss-maintainer-radar"
+version = "0.1.0"
+description = "Evidence-based GitHub maintenance reports and Codex workflow prompts for open-source maintainers."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "OSS Maintainer Radar contributors" }
+]
+keywords = ["open-source", "maintainers", "github", "codex", "triage"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: Software Development :: Version Control :: Git",
+]
+dependencies = []
+
+[project.scripts]
+oss-radar = "oss_maintainer_radar.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

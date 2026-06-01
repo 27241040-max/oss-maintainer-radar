@@ -1,0 +1,16 @@
+{
+  "repository": {
+    "full_name": "example/new-project",
+    "html_url": "https://github.com/example/new-project",
+    "description": "A newly published open-source project.",
+    "stargazers_count": 0,
+    "forks_count": 0,
+    "open_issues_count": 0,
+    "default_branch": "main",
+    "archived": false
+  },
+  "issues": [],
+  "pull_requests": [],
+  "releases": []
+}
+
