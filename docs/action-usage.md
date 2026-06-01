@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.5.1
+      - uses: 27241040-max/oss-maintainer-radar@v0.6.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -52,6 +52,8 @@ The action writes:
 
 The JSON report follows
 [`schemas/maintainer-report.schema.json`](../schemas/maintainer-report.schema.json).
+It includes `release_note_groups` so downstream automation can draft changelog
+sections without inferring impact beyond pull request labels and titles.
 
 ## Maintainer Review
 

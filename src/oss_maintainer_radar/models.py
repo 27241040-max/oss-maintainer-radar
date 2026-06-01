@@ -213,6 +213,20 @@ class WorkItem:
 
 
 @dataclass(frozen=True)
+class ReleaseNoteItem:
+    number: int
+    title: str
+    url: str
+    labels: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ReleaseNoteGroup:
+    category: str
+    pull_requests: tuple[ReleaseNoteItem, ...] = ()
+
+
+@dataclass(frozen=True)
 class MaintainerReport:
     repository: Repository
     generated_at: datetime
@@ -227,6 +241,7 @@ class MaintainerReport:
     review_backlog: tuple[WorkItem, ...] = ()
     latest_release: Release | None = None
     release_notes: tuple[str, ...] = ()
+    release_note_groups: tuple[ReleaseNoteGroup, ...] = ()
     qualification_signals: tuple[str, ...] = ()
     risks: tuple[str, ...] = ()
     evidence: Evidence = field(default_factory=Evidence)

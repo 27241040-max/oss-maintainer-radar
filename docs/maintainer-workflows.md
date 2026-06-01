@@ -63,6 +63,7 @@ Before publishing:
 
 - inspect open bug-labeled issues
 - check stale PRs that may contain release blockers
+- review deterministic release-note groups produced from completed PR labels and titles
 - review recent completed PRs for changelog entries
 - keep release notes separate from unverifiable marketing claims
 

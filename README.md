@@ -12,6 +12,7 @@ then produces:
 - a prioritized maintainer action plan
 - stale issue and pull request signals
 - release-readiness notes
+- deterministic release-note groups from completed pull request labels and titles
 - Codex task prompts maintainers can paste into their normal review workflow
 - optional Codex for Open Source form-field drafts for projects that already
   have truthful public evidence
@@ -131,7 +132,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.5.1
+- uses: 27241040-max/oss-maintainer-radar@v0.6.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -185,7 +186,7 @@ setup.
 See [docs/scheduled-maintainer-workflow.md](docs/scheduled-maintainer-workflow.md)
 for an end-to-end weekly workflow using scheduled report artifacts.
 See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.json)
-for the machine-readable report schema.
+for the machine-readable report schema. The current schema version is `1.1`.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for
@@ -201,6 +202,7 @@ help with:
 - issue triage summaries
 - pull request review briefs
 - release-note drafting
+- deterministic release-note grouping
 - regression-risk checklists
 - security-review routing
 

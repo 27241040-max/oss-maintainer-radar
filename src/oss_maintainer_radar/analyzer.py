@@ -3,7 +3,15 @@ from __future__ import annotations
 from collections import Counter
 from datetime import datetime, timezone
 
-from .models import MaintainerReport, Release, RepoSnapshot, WorkItem
+from .models import (
+    MaintainerReport,
+    PullRequest,
+    Release,
+    ReleaseNoteGroup,
+    ReleaseNoteItem,
+    RepoSnapshot,
+    WorkItem,
+)
 
 
 def analyze_snapshot(
@@ -59,6 +67,7 @@ def analyze_snapshot(
         review_backlog=review_backlog,
         latest_release=latest_release,
         release_notes=_release_notes(filtered_snapshot, latest_release),
+        release_note_groups=_release_note_groups(filtered_snapshot),
         qualification_signals=_qualification_signals(filtered_snapshot),
         risks=_risks(filtered_snapshot),
         evidence=filtered_snapshot.evidence,
@@ -121,6 +130,66 @@ def _release_notes(snapshot: RepoSnapshot, latest_release: Release | None) -> tu
         notes.append(f"{open_bug_count} open bug-labeled issue(s) may affect release readiness.")
 
     return tuple(notes)
+
+
+def _release_note_groups(snapshot: RepoSnapshot) -> tuple[ReleaseNoteGroup, ...]:
+    grouped: dict[str, list[ReleaseNoteItem]] = {category: [] for category in _RELEASE_NOTE_CATEGORY_ORDER}
+    for pr in snapshot.pull_requests:
+        if pr.state not in {"closed", "merged"}:
+            continue
+        grouped[_release_note_category(pr)].append(
+            ReleaseNoteItem(
+                number=pr.number,
+                title=pr.title,
+                url=pr.url,
+                labels=pr.labels,
+            )
+        )
+
+    return tuple(
+        ReleaseNoteGroup(category=category, pull_requests=tuple(items))
+        for category, items in grouped.items()
+        if items
+    )
+
+
+_RELEASE_NOTE_CATEGORY_ORDER = (
+    "Security-sensitive changes",
+    "Bug fixes",
+    "Documentation",
+    "Dependencies",
+    "Maintenance",
+    "Other changes",
+)
+
+
+def _release_note_category(pr: PullRequest) -> str:
+    labels = {label.lower() for label in pr.labels}
+    title = pr.title.lower()
+    words = labels | set(title.replace("/", " ").replace("-", " ").replace("_", " ").split())
+
+    if labels & {"security", "vulnerability", "cve"} or words & {"security", "vulnerability", "cve", "auth", "secret"}:
+        return "Security-sensitive changes"
+    if labels & {"bug", "bugfix", "fix"} or words & {"bug", "fix", "fixed", "failure", "error", "crash", "broken"}:
+        return "Bug fixes"
+    if labels & {"documentation", "docs"} or words & {"documentation", "docs", "readme", "guide"}:
+        return "Documentation"
+    if labels & {"dependencies", "dependency", "dependabot"} or words & {"bump", "upgrade", "dependency", "dependencies", "dependabot"}:
+        return "Dependencies"
+    if labels & {"maintenance", "chore", "ci", "build", "release", "refactor", "tests"} or words & {
+        "maintenance",
+        "chore",
+        "ci",
+        "workflow",
+        "build",
+        "release",
+        "refactor",
+        "test",
+        "tests",
+        "cleanup",
+    }:
+        return "Maintenance"
+    return "Other changes"
 
 
 def _qualification_signals(snapshot: RepoSnapshot) -> tuple[str, ...]:

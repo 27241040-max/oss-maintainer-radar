@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.5.1
+      - uses: 27241040-max/oss-maintainer-radar@v0.6.0
         with:
           target_repo: ${{ inputs.target_repo || github.repository }}
           stale_days: ${{ inputs.stale_days || '30' }}
@@ -106,6 +106,8 @@ workflow.
    - Defer or close inactive PRs only after a maintainer review.
 3. Review **Release Notes**.
    - Copy recent completed PR titles into a changelog draft.
+   - Use release-note groups as deterministic buckets for bug fixes, docs,
+     dependencies, security-sensitive changes, maintenance, and other changes.
    - Check bug-labeled issues before creating a release.
    - Use `--since` to keep release notes tied to the current release window.
 4. Review `scorecard.md` and `action-plan.md`.
@@ -134,6 +136,7 @@ Review backlog:
 
 Release notes:
 - Completed PRs considered:
+- Release-note groups checked:
 - Changelog entries needed:
 
 Evidence notes:

@@ -25,6 +25,7 @@ class CliTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
             self.assertIn("# Maintainer Radar", text)
             self.assertIn("Qualification Signals", text)
+            self.assertIn("Release Note Groups", text)
 
     def test_application_writes_conservative_draft(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -150,6 +151,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("# Maintainer Action Plan", text)
             self.assertIn("## Immediate", text)
             self.assertIn("completed pull request", text)
+            self.assertIn("deterministic groups", text)
             self.assertIn("## Evidence To Keep Current", text)
 
     def test_form_fields_can_use_applicant_profile(self) -> None:

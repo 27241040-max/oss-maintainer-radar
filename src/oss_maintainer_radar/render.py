@@ -13,7 +13,7 @@ def report_to_json(report: MaintainerReport) -> str:
 
 def report_to_dict(report: MaintainerReport) -> dict:
     data = asdict(report)
-    data["schema_version"] = "1.0"
+    data["schema_version"] = "1.1"
     data["generated_at"] = report.generated_at.isoformat()
     data["window_start"] = report.window_start.isoformat() if report.window_start else None
     if report.latest_release and data["latest_release"]:
@@ -77,6 +77,8 @@ def report_to_markdown(report: MaintainerReport) -> str:
 
     lines.extend(["", "## Release Notes", ""])
     lines.extend(f"- {note}" for note in report.release_notes)
+    lines.extend(["", "## Release Note Groups", ""])
+    lines.extend(_release_note_group_lines(report))
 
     lines.extend(["", "## Qualification Signals", ""])
     lines.extend(f"- {signal}" for signal in report.qualification_signals)
@@ -226,7 +228,7 @@ def codex_prompts(report: MaintainerReport) -> str:
 
         ## Release Readiness
 
-        Build a release checklist from the latest merged PRs, open bug-labeled issues, changelog gaps, and test status. Flag blockers separately from nice-to-have cleanup.
+        Build a release checklist from the release-note groups, open bug-labeled issues, changelog gaps, and test status. Flag blockers separately from nice-to-have cleanup, and do not infer impact beyond labels, titles, and code context.
         """
     )
 
@@ -552,6 +554,9 @@ def _weekly_actions(report: MaintainerReport) -> list[str]:
     completed_pr_count = max(0, report.sampled_pull_request_count - report.open_pull_request_count)
     if completed_pr_count:
         actions.append(f"- Review {_count(completed_pr_count, 'completed pull request')} for release-note impact.")
+    if report.release_note_groups:
+        groups = ", ".join(group.category for group in report.release_note_groups[:5])
+        actions.append(f"- Draft release notes from deterministic groups: {groups}.")
     if report.label_counts:
         top_labels = ", ".join(list(report.label_counts)[:5])
         actions.append(f"- Watch high-volume labels: {top_labels}.")
@@ -586,6 +591,19 @@ def _work_items(items: tuple[WorkItem, ...], empty: str) -> list[str]:
         f"- #{item.number} {item.title} ({item.age_days} days since update) {item.url}".rstrip()
         for item in items
     ]
+
+
+def _release_note_group_lines(report: MaintainerReport) -> list[str]:
+    if not report.release_note_groups:
+        return ["- No completed pull requests were available for release-note grouping."]
+
+    lines: list[str] = []
+    for group in report.release_note_groups:
+        lines.append(f"- {group.category}")
+        for item in group.pull_requests[:5]:
+            label_text = f" [{', '.join(item.labels)}]" if item.labels else ""
+            lines.append(f"  - #{item.number} {item.title}{label_text} {item.url}".rstrip())
+    return lines
 
 
 def _fit_500(value: str) -> str:

@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.6.0 - 2026-06-01
+
+- Added deterministic release-note grouping for completed pull requests using labels and titles only.
+- Added `release_note_groups` to Markdown and JSON reports.
+- Updated the report schema to `schema_version` 1.1.
+- Added tests and workflow documentation for grouped release notes.
+
 ## 0.5.1 - 2026-06-01
 
 - Added an optional `gh api` fallback when direct GitHub API requests fail because of local TLS or network transport issues.

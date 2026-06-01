@@ -18,6 +18,7 @@
     "review_backlog",
     "latest_release",
     "release_notes",
+    "release_note_groups",
     "qualification_signals",
     "risks",
     "evidence",
@@ -26,7 +27,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "1.0"
+      "const": "1.1"
     },
     "repository": {
       "$ref": "#/$defs/repository"
@@ -93,6 +94,12 @@
       "type": "array",
       "items": {
         "type": "string"
+      }
+    },
+    "release_note_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/release_note_group"
       }
     },
     "qualification_signals": {
@@ -222,6 +229,52 @@
             "string",
             "null"
           ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "release_note_item": {
+      "type": "object",
+      "required": [
+        "number",
+        "title",
+        "url",
+        "labels"
+      ],
+      "properties": {
+        "number": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "release_note_group": {
+      "type": "object",
+      "required": [
+        "category",
+        "pull_requests"
+      ],
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "pull_requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/release_note_item"
+          }
         }
       },
       "additionalProperties": false

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from oss_maintainer_radar.analyzer import analyze_snapshot
 from oss_maintainer_radar.github import load_applicant, load_evidence, load_snapshot, parse_repo_ref
+from oss_maintainer_radar.models import RepoSnapshot
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
@@ -65,6 +66,36 @@ class AnalyzerTests(unittest.TestCase):
         self.assertEqual(report.evidence.monthly_downloads, 5200)
         self.assertTrue(any("5200 monthly downloads" in signal for signal in report.qualification_signals))
         self.assertFalse(any("Low public adoption" in risk for risk in report.risks))
+
+    def test_release_note_groups_are_deterministic_from_labels_and_titles(self) -> None:
+        snapshot = RepoSnapshot.from_payload(
+            {
+                "repository": {
+                    "full_name": "example/repo",
+                    "html_url": "https://github.com/example/repo",
+                },
+                "pull_requests": [
+                    {"number": 1, "title": "Patch auth token handling", "state": "closed", "labels": []},
+                    {"number": 2, "title": "Fix crash on empty config", "state": "closed", "labels": []},
+                    {"number": 3, "title": "Improve README setup guide", "state": "closed", "labels": []},
+                    {"number": 4, "title": "Bump actions/checkout from 4 to 6", "state": "closed", "labels": []},
+                    {"number": 5, "title": "Refresh CI workflow", "state": "closed", "labels": []},
+                    {"number": 6, "title": "Add compact mode", "state": "closed", "labels": []},
+                    {"number": 7, "title": "Open review remains excluded", "state": "open", "labels": []},
+                ],
+            }
+        )
+
+        report = analyze_snapshot(snapshot)
+        groups = {group.category: [item.number for item in group.pull_requests] for group in report.release_note_groups}
+
+        self.assertEqual(groups["Security-sensitive changes"], [1])
+        self.assertEqual(groups["Bug fixes"], [2])
+        self.assertEqual(groups["Documentation"], [3])
+        self.assertEqual(groups["Dependencies"], [4])
+        self.assertEqual(groups["Maintenance"], [5])
+        self.assertEqual(groups["Other changes"], [6])
+        self.assertNotIn(7, [number for numbers in groups.values() for number in numbers])
 
     def test_since_filters_release_window_evidence(self) -> None:
         snapshot = load_snapshot(FIXTURE)
