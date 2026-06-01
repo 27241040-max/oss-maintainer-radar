@@ -13,6 +13,7 @@ then produces:
 - stale issue and pull request signals
 - release-readiness notes
 - deterministic release-note groups from completed pull request labels and titles
+- normalized common maintainer labels while preserving original label text
 - Codex task prompts maintainers can paste into their normal review workflow
 - optional Codex for Open Source form-field drafts for projects that already
   have truthful public evidence
@@ -132,7 +133,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.6.0
+- uses: 27241040-max/oss-maintainer-radar@v0.7.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -207,8 +208,8 @@ help with:
 - security-review routing
 
 The current CLI and Action keep these workflows deterministic. Release-window
-filtering and generated Codex prompts make it easy to add AI assistance without
-hiding the evidence.
+filtering, normalized label grouping, and generated Codex prompts make it easy
+to add AI assistance without hiding the evidence.
 
 ## Development
 

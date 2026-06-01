@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.6.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.7.0
         with:
           target_repo: ${{ inputs.target_repo || github.repository }}
           stale_days: ${{ inputs.stale_days || '30' }}
@@ -108,6 +108,8 @@ workflow.
    - Copy recent completed PR titles into a changelog draft.
    - Use release-note groups as deterministic buckets for bug fixes, docs,
      dependencies, security-sensitive changes, maintenance, and other changes.
+   - Treat normalized labels as grouping hints only; keep original labels in
+     maintainer comments and changelog evidence.
    - Check bug-labeled issues before creating a release.
    - Use `--since` to keep release notes tied to the current release window.
 4. Review `scorecard.md` and `action-plan.md`.

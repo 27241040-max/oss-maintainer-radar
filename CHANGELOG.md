@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.7.0 - 2026-06-01
+
+- Added deterministic label normalization for common maintainer labels before release-note grouping.
+- Recognized aliases such as `type: bug`, `area/docs`, `security-review`, `dependencies`, and `chore`.
+- Kept original labels unchanged in Markdown and JSON report output.
+- Added tests for normalized label aliases and bug-labeled release readiness notes.
+
 ## 0.6.0 - 2026-06-01
 
 - Added deterministic release-note grouping for completed pull requests using labels and titles only.

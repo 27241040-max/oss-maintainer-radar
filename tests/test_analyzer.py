@@ -97,6 +97,42 @@ class AnalyzerTests(unittest.TestCase):
         self.assertEqual(groups["Other changes"], [6])
         self.assertNotIn(7, [number for numbers in groups.values() for number in numbers])
 
+    def test_release_note_groups_normalize_common_label_aliases_without_rewriting_labels(self) -> None:
+        snapshot = RepoSnapshot.from_payload(
+            {
+                "repository": {
+                    "full_name": "example/repo",
+                    "html_url": "https://github.com/example/repo",
+                },
+                "issues": [
+                    {
+                        "number": 10,
+                        "title": "Crash in config loader",
+                        "state": "open",
+                        "labels": [{"name": "type: bug"}],
+                    }
+                ],
+                "pull_requests": [
+                    {"number": 1, "title": "Harden token storage", "state": "closed", "labels": [{"name": "security-review"}]},
+                    {"number": 2, "title": "Repair config loader", "state": "closed", "labels": [{"name": "type: bug"}]},
+                    {"number": 3, "title": "Clarify install path", "state": "closed", "labels": [{"name": "area/docs"}]},
+                    {"number": 4, "title": "Upgrade action pins", "state": "closed", "labels": [{"name": "dependencies"}]},
+                    {"number": 5, "title": "Refresh workflows", "state": "closed", "labels": [{"name": "chore"}]},
+                ],
+            }
+        )
+
+        report = analyze_snapshot(snapshot)
+        groups = {group.category: group.pull_requests for group in report.release_note_groups}
+
+        self.assertEqual([item.number for item in groups["Security-sensitive changes"]], [1])
+        self.assertEqual([item.number for item in groups["Bug fixes"]], [2])
+        self.assertEqual([item.number for item in groups["Documentation"]], [3])
+        self.assertEqual([item.number for item in groups["Dependencies"]], [4])
+        self.assertEqual([item.number for item in groups["Maintenance"]], [5])
+        self.assertEqual(groups["Bug fixes"][0].labels, ("type: bug",))
+        self.assertTrue(any("open bug-labeled issue" in note for note in report.release_notes))
+
     def test_since_filters_release_window_evidence(self) -> None:
         snapshot = load_snapshot(FIXTURE)
         report = analyze_snapshot(

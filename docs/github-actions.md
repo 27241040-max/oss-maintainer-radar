@@ -12,6 +12,7 @@ It can:
 - generate a maintainer report
 - generate a machine-readable JSON report
 - generate deterministic release-note groups from completed PR labels and titles
+- normalize common label aliases for grouping while preserving original labels
 - generate a scorecard and action plan
 - generate Codex prompts for triage, review, and release readiness
 - upload the generated files as a workflow artifact

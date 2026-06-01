@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import datetime, timezone
+import re
 
 from .models import (
     MaintainerReport,
@@ -124,7 +125,7 @@ def _release_notes(snapshot: RepoSnapshot, latest_release: Release | None) -> tu
     open_bug_count = sum(
         1
         for issue in snapshot.issues
-        if issue.state == "open" and any(label.lower() == "bug" for label in issue.labels)
+        if issue.state == "open" and _labels_include(issue.labels, {"bug", "bugfix", "defect", "regression"})
     )
     if open_bug_count:
         notes.append(f"{open_bug_count} open bug-labeled issue(s) may affect release readiness.")
@@ -164,19 +165,19 @@ _RELEASE_NOTE_CATEGORY_ORDER = (
 
 
 def _release_note_category(pr: PullRequest) -> str:
-    labels = {label.lower() for label in pr.labels}
-    title = pr.title.lower()
-    words = labels | set(title.replace("/", " ").replace("-", " ").replace("_", " ").split())
+    label_tokens = _label_tokens(pr.labels)
+    title_tokens = _text_tokens(pr.title)
+    words = label_tokens | title_tokens
 
-    if labels & {"security", "vulnerability", "cve"} or words & {"security", "vulnerability", "cve", "auth", "secret"}:
+    if words & {"security", "vulnerability", "cve", "auth", "secret"}:
         return "Security-sensitive changes"
-    if labels & {"bug", "bugfix", "fix"} or words & {"bug", "fix", "fixed", "failure", "error", "crash", "broken"}:
+    if words & {"bug", "bugfix", "defect", "regression", "fix", "fixed", "failure", "error", "crash", "broken"}:
         return "Bug fixes"
-    if labels & {"documentation", "docs"} or words & {"documentation", "docs", "readme", "guide"}:
+    if words & {"documentation", "docs", "doc", "readme", "guide"}:
         return "Documentation"
-    if labels & {"dependencies", "dependency", "dependabot"} or words & {"bump", "upgrade", "dependency", "dependencies", "dependabot"}:
+    if words & {"dependencies", "dependency", "deps", "dependabot", "bump", "upgrade"}:
         return "Dependencies"
-    if labels & {"maintenance", "chore", "ci", "build", "release", "refactor", "tests"} or words & {
+    if words & {
         "maintenance",
         "chore",
         "ci",
@@ -190,6 +191,24 @@ def _release_note_category(pr: PullRequest) -> str:
     }:
         return "Maintenance"
     return "Other changes"
+
+
+def _labels_include(labels: tuple[str, ...], aliases: set[str]) -> bool:
+    return bool(_label_tokens(labels) & aliases)
+
+
+def _label_tokens(labels: tuple[str, ...]) -> set[str]:
+    tokens: set[str] = set()
+    for label in labels:
+        normalized = " ".join(_text_tokens(label))
+        if normalized:
+            tokens.add(normalized)
+        tokens.update(_text_tokens(label))
+    return tokens
+
+
+def _text_tokens(value: str) -> set[str]:
+    return {part for part in re.split(r"[^a-z0-9]+", value.lower()) if part}
 
 
 def _qualification_signals(snapshot: RepoSnapshot) -> tuple[str, ...]:
