@@ -15,7 +15,7 @@ then produces:
 - deterministic release-note groups from completed pull request labels and titles
 - normalized common maintainer labels while preserving original label text
 - local JSON report validation against the published report schema
-- Markdown and CSV trend summaries across saved reports
+- Markdown, CSV, and JSON trend summaries across saved reports
 - trend warnings for mismatched repositories or report schema versions
 - Codex task prompts maintainers can paste into their normal review workflow
 - optional Codex for Open Source form-field drafts for projects that already
@@ -76,6 +76,7 @@ oss-radar audit --repo owner/repo --format json --output reports/week-2.json
 oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
+oss-radar trend reports/week-1.json reports/week-2.json --format json --output reports/trend.json
 ```
 
 Create a combined submission pack:
@@ -146,7 +147,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.11.0
+- uses: 27241040-max/oss-maintainer-radar@v0.12.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -225,6 +226,7 @@ help with:
 - deterministic release-note grouping
 - trend reports across saved JSON snapshots
 - CSV summaries for spreadsheet or dashboard review
+- JSON summaries for dashboard integrations
 - guardrails for mismatched trend inputs
 - schema validation for downloaded workflow artifacts
 - regression-risk checklists

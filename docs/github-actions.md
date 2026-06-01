@@ -19,6 +19,7 @@ It can:
 - provide JSON artifacts that can be validated with `oss-radar validate-report`
 - provide JSON artifacts that can be compared later with `oss-radar trend`
 - provide CSV trend rows for spreadsheet or dashboard review
+- provide JSON trend rows for dashboard integrations
 - warn when trend inputs mix repositories or schema versions
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not

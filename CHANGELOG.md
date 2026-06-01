@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.12.0 - 2026-06-01
+
+- Added `oss-radar trend --format json` for dashboard-friendly trend output.
+- Included compared report paths, warnings, metrics, deltas, directions, and review boundaries in trend JSON.
+- Added JSON trend tests for matching inputs and repository/schema warning inputs.
+- Documented saving JSON trend summaries next to workflow artifacts.
+
 ## 0.11.0 - 2026-06-01
 
 - Added trend comparison warnings for reports from different repositories.

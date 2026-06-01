@@ -333,6 +333,28 @@ class CliTests(unittest.TestCase):
             self.assertEqual(rows["Scorecard score"]["delta"], "-25")
             self.assertEqual(rows["Scorecard score"]["direction"], "worsened")
 
+    def test_trend_json_reports_matching_saved_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.json"
+            _write_report(first, open_issues=8, stale_issues=3, review_backlog=2, releases=1, risks=2, score=55)
+            _write_report(latest, open_issues=4, stale_issues=1, review_backlog=0, releases=2, risks=1, score=75)
+
+            status = main(["trend", str(first), str(latest), "--format", "json", "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(payload["repository"], "example/repo")
+            self.assertEqual(payload["reports_compared"], 2)
+            self.assertEqual(payload["first_snapshot"], str(first))
+            self.assertEqual(payload["latest_snapshot"], str(latest))
+            self.assertEqual(payload["warnings"], [])
+            self.assertEqual(payload["metrics"][0]["metric_name"], "Open issues")
+            self.assertEqual(payload["metrics"][0]["delta"], -4)
+            self.assertEqual(payload["metrics"][0]["direction"], "improved")
+            self.assertIn("not automated decisions", payload["boundaries"][1])
+
     def test_trend_warns_on_repository_and_schema_mismatch(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             first = Path(tmp) / "first.json"
@@ -407,6 +429,43 @@ class CliTests(unittest.TestCase):
             self.assertIn("different repositories: example/first, example/latest", warning)
             self.assertIn("different schema versions: 1.1, 1.2", warning)
             self.assertTrue(all(row["warnings"] == warning for row in rows))
+
+    def test_trend_json_includes_warnings_for_mismatches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.json"
+            _write_report(
+                first,
+                repository="example/first",
+                schema_version="1.1",
+                open_issues=8,
+                stale_issues=3,
+                review_backlog=2,
+                releases=1,
+                risks=2,
+                score=55,
+            )
+            _write_report(
+                latest,
+                repository="example/latest",
+                schema_version="1.2",
+                open_issues=4,
+                stale_issues=1,
+                review_backlog=0,
+                releases=2,
+                risks=1,
+                score=75,
+            )
+
+            status = main(["trend", str(first), str(latest), "--format", "json", "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(payload["repository"], "example/latest")
+            self.assertIn("different repositories: example/first, example/latest", payload["warnings"][0])
+            self.assertIn("different schema versions: 1.1, 1.2", payload["warnings"][1])
+            self.assertEqual(payload["metrics"][0]["direction"], "improved")
 
     def test_validate_report_passes_generated_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

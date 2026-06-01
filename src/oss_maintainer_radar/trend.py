@@ -110,6 +110,15 @@ def trend_csv(paths: list[Path]) -> str:
     return output.getvalue()
 
 
+def trend_json(paths: list[Path]) -> str:
+    if len(paths) < 2:
+        raise ValueError("trend requires at least two JSON report files")
+
+    snapshots = [_load_trend_snapshot(path) for path in paths]
+    payload = _trend_payload(snapshots)
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
 def _load_trend_snapshot(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     repository = payload.get("repository") or {}
@@ -136,6 +145,41 @@ def _int_field(payload: dict[str, Any], key: str, *, list_count: bool = False) -
     if value in (None, ""):
         return 0
     return int(value)
+
+
+def _trend_payload(snapshots: list[dict[str, Any]]) -> dict[str, Any]:
+    first = snapshots[0]
+    latest = snapshots[-1]
+    return {
+        "repository": latest["repository"],
+        "reports_compared": len(snapshots),
+        "first_snapshot": first["path"],
+        "latest_snapshot": latest["path"],
+        "warnings": _comparison_warnings(snapshots),
+        "metrics": [_metric_row(name, key, preferred, first, latest) for name, key, preferred in TREND_METRICS],
+        "boundaries": [
+            "Compare reports generated from the same repository and similar windows when possible.",
+            "Treat increases or decreases as prompts for maintainer review, not automated decisions.",
+            "Do not turn trend changes into adoption, ecosystem-importance, or selection claims.",
+        ],
+    }
+
+
+def _metric_row(
+    name: str,
+    key: str,
+    preferred: str,
+    first: dict[str, Any],
+    latest: dict[str, Any],
+) -> dict[str, Any]:
+    delta = latest[key] - first[key]
+    return {
+        "metric_name": name,
+        "first_value": first[key],
+        "latest_value": latest[key],
+        "delta": delta,
+        "direction": _direction(delta, preferred),
+    }
 
 
 def _comparison_warnings(snapshots: list[dict[str, Any]]) -> list[str]:

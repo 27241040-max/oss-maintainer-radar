@@ -137,6 +137,21 @@ def main() -> int:
             stdout=subprocess.DEVNULL,
             pythonpath=True,
         )
+        run(
+            "trend JSON",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "trend",
+                str(report),
+                str(report),
+                "--format",
+                "json",
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
         mismatched = Path(report_tmp) / "mismatched.json"
         mismatched_payload = json.loads(report.read_text(encoding="utf-8"))
         mismatched_payload["repository"]["full_name"] = "example/other"
@@ -152,6 +167,21 @@ def main() -> int:
                 str(mismatched),
                 "--format",
                 "csv",
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
+        run(
+            "trend mismatched JSON warning",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "trend",
+                str(report),
+                str(mismatched),
+                "--format",
+                "json",
             ],
             stdout=subprocess.DEVNULL,
             pythonpath=True,
@@ -202,6 +232,12 @@ def main() -> int:
         run(
             "wheel CLI trend CSV",
             [str(wheel_cli), "trend", str(wheel_report), str(wheel_report), "--format", "csv"],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
+        run(
+            "wheel CLI trend JSON",
+            [str(wheel_cli), "trend", str(wheel_report), str(wheel_report), "--format", "json"],
             stdout=subprocess.DEVNULL,
             cwd=tmp_path,
         )

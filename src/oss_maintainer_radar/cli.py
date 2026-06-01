@@ -19,7 +19,7 @@ from .render import (
     submission_pack,
 )
 from .schema_validation import validate_reports
-from .trend import trend_csv, trend_report
+from .trend import trend_csv, trend_json, trend_report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -28,7 +28,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.command == "trend":
-            output = trend_csv(args.reports) if args.format == "csv" else trend_report(args.reports)
+            if args.format == "csv":
+                output = trend_csv(args.reports)
+            elif args.format == "json":
+                output = trend_json(args.reports)
+            else:
+                output = trend_report(args.reports)
             _write_output(output, args.output)
             return 0
 
@@ -121,7 +126,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     trend = subparsers.add_parser("trend", help="Compare saved JSON reports across time.")
     trend.add_argument("reports", nargs="+", type=Path, help="Saved JSON reports from `oss-radar audit --format json`.")
-    trend.add_argument("--format", choices=["markdown", "csv"], default="markdown")
+    trend.add_argument("--format", choices=["markdown", "csv", "json"], default="markdown")
     trend.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     validate = subparsers.add_parser("validate-report", help="Validate JSON reports against the report schema.")
