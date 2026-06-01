@@ -5,6 +5,7 @@ Use this checklist when preparing OSS Maintainer Radar releases.
 ## Before Release
 
 - Run `python -m unittest discover -s tests`.
+- Run `python scripts/verify.py`.
 - Run `python -m build`.
 - Run `oss-radar audit --fixture examples/sample_github_payload.json`.
 - Review generated application text and confirm 500-character fields still fit.

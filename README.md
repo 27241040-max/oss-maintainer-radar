@@ -159,6 +159,12 @@ Run tests:
 python -m unittest discover -s tests
 ```
 
+Run the full local verification suite:
+
+```bash
+python scripts/verify.py
+```
+
 Build distribution artifacts:
 
 ```bash

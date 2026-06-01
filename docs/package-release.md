@@ -13,6 +13,13 @@ python -m pip install -e ".[dev]"
 python -m build
 ```
 
+For the full maintainer check, including tests, CLI smoke tests, source
+distribution inspection, wheel installation, and entry-point verification:
+
+```bash
+python scripts/verify.py
+```
+
 Expected artifacts:
 
 - `dist/oss_maintainer_radar-0.1.0.tar.gz`
