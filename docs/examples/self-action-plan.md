@@ -1,6 +1,6 @@
 # Maintainer Action Plan: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T06:59:40.021987+00:00
+Generated: 2026-06-01T07:09:44.874784+00:00
 
 ## Immediate
 
@@ -9,10 +9,10 @@ Generated: 2026-06-01T06:59:40.021987+00:00
 ## This Week
 
 - Review the current sample of 0 open pull requests.
-- Triage the current sample of 3 open issues.
+- Triage the current sample of 2 open issues.
 - Keep release notes tied to merged changes and public tags.
 - Review 3 completed pull requests for release-note impact.
-- Watch high-volume labels: enhancement, documentation, good first issue, help wanted.
+- Watch high-volume labels: documentation, good first issue, enhancement.
 
 ## Evidence To Keep Current
 
