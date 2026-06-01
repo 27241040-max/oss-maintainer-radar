@@ -2,6 +2,14 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.14.0 - 2026-06-01
+
+- Added `examples/trend_dashboard.py`, a dependency-free trend JSON dashboard example.
+- Added dashboard documentation that validates trend JSON before ingestion.
+- Added tests and verification coverage for the dashboard example.
+- Included Python examples in source distributions.
+- Kept dashboard output framed as maintainer review support, not automated scoring.
+
 ## 0.13.0 - 2026-06-01
 
 - Added `schemas/trend-report.schema.json` for `oss-radar trend --format json` output.

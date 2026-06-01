@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.13.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.14.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -78,6 +78,7 @@ oss-radar trend \
   --output reports/trend-summary.json
 
 oss-radar validate-report reports/trend-summary.json --schema trend
+python examples/trend_dashboard.py reports/trend-summary.json
 ```
 
 Run validation first after downloading artifacts. A `PASS` summary means the
@@ -87,7 +88,9 @@ Save CSV summaries next to downloaded artifacts when you want spreadsheet or
 dashboard rows without parsing Markdown.
 Save JSON summaries when another dashboard or integration should consume the
 same warnings and metric rows without parsing CSV. Validate those summaries
-against the bundled trend schema before ingestion.
+against the bundled trend schema before ingestion. See
+[`docs/trend-dashboard.md`](trend-dashboard.md) for a dependency-free example
+that prints validated trend rows for maintainer review.
 Trend warnings for repository or schema mismatches are review prompts, not
 automated rejection decisions.
 

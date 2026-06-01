@@ -90,6 +90,7 @@ oss-radar trend reports/week-1.json reports/week-2.json --output reports/trend.m
 oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
 oss-radar trend reports/week-1.json reports/week-2.json --format json --output reports/trend.json
 oss-radar validate-report reports/trend.json --schema trend
+python examples/trend_dashboard.py reports/trend.json
 ```
 
 Use trend reports to:
@@ -100,5 +101,6 @@ Use trend reports to:
 - save CSV rows for spreadsheet or dashboard review without parsing Markdown
 - save JSON rows for dashboards without parsing CSV
 - validate trend JSON against `schemas/trend-report.schema.json` before dashboard ingestion
+- print validated trend rows with `examples/trend_dashboard.py`
 - treat repository or schema mismatch warnings as prompts to review inputs
 - avoid turning trend deltas into adoption or ecosystem-importance claims

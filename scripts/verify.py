@@ -170,6 +170,11 @@ def main() -> int:
             stdout=subprocess.DEVNULL,
             pythonpath=True,
         )
+        run(
+            "trend dashboard example",
+            [sys.executable, "examples/trend_dashboard.py", str(trend_json)],
+            stdout=subprocess.DEVNULL,
+        )
         mismatched = Path(report_tmp) / "mismatched.json"
         mismatched_payload = json.loads(report.read_text(encoding="utf-8"))
         mismatched_payload["repository"]["full_name"] = "example/other"
@@ -321,6 +326,8 @@ def inspect_sdist(source: Path) -> None:
         "src/oss_maintainer_radar/schemas/trend-report.schema.json",
         "action.yml",
         "examples/applicant.example.json",
+        "examples/trend_dashboard.py",
+        "docs/trend-dashboard.md",
         "tests/test_cli.py",
     ]
     missing = [suffix for suffix in required_suffixes if not any(item.endswith(suffix) for item in files)]

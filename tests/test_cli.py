@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import csv
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,9 +14,10 @@ from oss_maintainer_radar.github import load_snapshot
 from oss_maintainer_radar.render import application_draft
 
 
-FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
-EVIDENCE_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "evidence.json"
-APPLICANT_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "applicant.example.json"
+ROOT = Path(__file__).resolve().parents[1]
+FIXTURE = ROOT / "examples" / "sample_github_payload.json"
+EVIDENCE_FIXTURE = ROOT / "examples" / "evidence.json"
+APPLICANT_FIXTURE = ROOT / "examples" / "applicant.example.json"
 
 
 class CliTests(unittest.TestCase):
@@ -466,6 +469,28 @@ class CliTests(unittest.TestCase):
             self.assertIn("different repositories: example/first, example/latest", payload["warnings"][0])
             self.assertIn("different schema versions: 1.1, 1.2", payload["warnings"][1])
             self.assertEqual(payload["metrics"][0]["direction"], "improved")
+
+    def test_trend_dashboard_example_prints_metric_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            trend = Path(tmp) / "trend.json"
+            _write_report(first, open_issues=8, stale_issues=3, review_backlog=2, releases=1, risks=2, score=55)
+            _write_report(latest, open_issues=4, stale_issues=1, review_backlog=0, releases=2, risks=1, score=75)
+            trend_status = main(["trend", str(first), str(latest), "--format", "json", "--output", str(trend)])
+
+            completed = subprocess.run(
+                [sys.executable, str(ROOT / "examples" / "trend_dashboard.py"), str(trend)],
+                check=True,
+                stdout=subprocess.PIPE,
+                text=True,
+            )
+
+            self.assertEqual(trend_status, 0)
+            self.assertIn("Maintainer Trend Dashboard: example/repo", completed.stdout)
+            self.assertIn("Open issues | 8 | 4 | -4 | improved", completed.stdout)
+            self.assertIn("Release count | 1 | 2 | +1 | improved", completed.stdout)
+            self.assertIn("Review boundaries:", completed.stdout)
 
     def test_validate_report_passes_generated_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

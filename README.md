@@ -78,6 +78,7 @@ oss-radar trend reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
 oss-radar trend reports/week-1.json reports/week-2.json --format json --output reports/trend.json
 oss-radar validate-report reports/trend.json --schema trend
+python examples/trend_dashboard.py reports/trend.json
 ```
 
 Create a combined submission pack:
@@ -148,7 +149,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.13.0
+- uses: 27241040-max/oss-maintainer-radar@v0.14.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -211,6 +212,8 @@ See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.jso
 for the machine-readable report schema. The current schema version is `1.2`.
 See [schemas/trend-report.schema.json](schemas/trend-report.schema.json) for
 the JSON trend output schema used by dashboard integrations.
+See [docs/trend-dashboard.md](docs/trend-dashboard.md) for a dependency-free
+example that prints validated trend JSON as maintainer review rows.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for
@@ -230,6 +233,7 @@ help with:
 - trend reports across saved JSON snapshots
 - CSV summaries for spreadsheet or dashboard review
 - JSON summaries for dashboard integrations
+- dependency-free trend dashboard examples for validated JSON rows
 - guardrails for mismatched trend inputs
 - schema validation for downloaded workflow artifacts
 - regression-risk checklists

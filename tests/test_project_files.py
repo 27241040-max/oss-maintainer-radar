@@ -34,11 +34,21 @@ class ProjectFileTests(unittest.TestCase):
     def test_readme_documents_reusable_action(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("27241040-max/oss-maintainer-radar@v0.13.0", text)
+        self.assertIn("27241040-max/oss-maintainer-radar@v0.14.0", text)
         self.assertIn("docs/action-usage.md", text)
         self.assertIn("docs/scheduled-maintainer-workflow.md", text)
+        self.assertIn("docs/trend-dashboard.md", text)
         self.assertIn("schemas/maintainer-report.schema.json", text)
         self.assertIn("schemas/trend-report.schema.json", text)
+
+    def test_trend_dashboard_doc_covers_issue_acceptance_criteria(self) -> None:
+        text = (ROOT / "docs" / "trend-dashboard.md").read_text(encoding="utf-8")
+
+        self.assertIn("oss-radar trend", text)
+        self.assertIn("--format json", text)
+        self.assertIn("validate-report reports/trend-summary.json --schema trend", text)
+        self.assertIn("python examples/trend_dashboard.py", text)
+        self.assertIn("not an automated project-health score", text)
 
     def test_scheduled_workflow_doc_covers_issue_acceptance_criteria(self) -> None:
         text = (ROOT / "docs" / "scheduled-maintainer-workflow.md").read_text(encoding="utf-8")

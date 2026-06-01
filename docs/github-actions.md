@@ -21,6 +21,7 @@ It can:
 - provide CSV trend rows for spreadsheet or dashboard review
 - provide JSON trend rows for dashboard integrations
 - provide a trend JSON schema for validating integration inputs
+- document a dependency-free trend dashboard example
 - warn when trend inputs mix repositories or schema versions
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
@@ -31,7 +32,9 @@ See [action-usage.md](action-usage.md) for the reusable Action interface,
 end-to-end maintainer loop, and
 [../schemas/maintainer-report.schema.json](../schemas/maintainer-report.schema.json)
 for the JSON report schema. Trend JSON integrations can validate against
-[../schemas/trend-report.schema.json](../schemas/trend-report.schema.json).
+[../schemas/trend-report.schema.json](../schemas/trend-report.schema.json), then
+use [trend-dashboard.md](trend-dashboard.md) for a small dashboard ingestion
+example.
 
 ## Manual Run
 

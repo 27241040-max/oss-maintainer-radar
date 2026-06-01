@@ -17,12 +17,13 @@ inflated claims.
   preparation.
 - Trend reports across saved snapshots, including Markdown, CSV, and JSON.
 - Schema validation for maintainer report JSON and trend JSON outputs.
+- Dependency-free trend JSON dashboard example for integration review.
 
 ## Near Term
 
-- Add richer dashboard examples for trend JSON consumers.
 - Add an optional trend JSON schema compatibility note for future schema
   versions.
+- Add a small regression-risk prompt template for release reviews.
 
 ## Later
 
