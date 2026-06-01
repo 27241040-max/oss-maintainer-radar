@@ -71,7 +71,7 @@ def application_draft(report: MaintainerReport, *, role: str) -> str:
                 f"I am a {role} maintainer of {report.repository.full_name}.",
                 f"The repo has {report.repository.stars} stars and {report.repository.forks} forks.",
                 f"Current maintenance surface includes {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')} in the sampled data.",
-                "It needs ongoing triage, review, release management, and quality work.",
+                "The project benefits from evidence-based triage, review, release management, and quality work.",
             ]
         )
     )
@@ -133,6 +133,39 @@ def codex_prompts(report: MaintainerReport) -> str:
         Build a release checklist from the latest merged PRs, open bug-labeled issues, changelog gaps, and test status. Flag blockers separately from nice-to-have cleanup.
         """
     )
+
+
+def submission_pack(report: MaintainerReport, *, role: str) -> str:
+    repo = report.repository
+    lines = [
+        "# Codex for Open Source Submission Pack",
+        "",
+        f"Repository: {repo.full_name}",
+        f"Repository URL: {repo.url or 'unknown'}",
+        f"Generated: {report.generated_at.isoformat()}",
+        "",
+        "## Before You Submit",
+        "",
+        "- Confirm your GitHub profile is public.",
+        "- Confirm the repository is public.",
+        f"- Confirm you are truly a {role} maintainer.",
+        "- Replace fixture/sample data with a live `--repo owner/repo` run.",
+        "- Fill in first name, last name, ChatGPT account email, and OpenAI organization ID yourself.",
+        "- Do not claim usage, downloads, permissions, or ecosystem importance that the evidence does not support.",
+        "",
+        "## Application Draft",
+        "",
+        application_draft(report, role=role).strip(),
+        "",
+        "## Evidence Report",
+        "",
+        report_to_markdown(report).strip(),
+        "",
+        "## Codex Workflow Prompts",
+        "",
+        codex_prompts(report).strip(),
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def _work_items(items: tuple[WorkItem, ...], empty: str) -> list[str]:

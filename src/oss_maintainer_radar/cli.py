@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .analyzer import analyze_snapshot
 from .github import fetch_snapshot, load_snapshot
-from .render import application_draft, codex_prompts, report_to_json, report_to_markdown
+from .render import application_draft, codex_prompts, report_to_json, report_to_markdown, submission_pack
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -23,6 +23,8 @@ def main(argv: list[str] | None = None) -> int:
             output = application_draft(report, role=args.role)
         elif args.command == "codex-prompts":
             output = codex_prompts(report)
+        elif args.command == "submission-pack":
+            output = submission_pack(report, role=args.role)
         else:
             parser.error(f"Unknown command: {args.command}")
             return 2
@@ -56,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prompts.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
+    pack = _add_snapshot_args(
+        subparsers.add_parser("submission-pack", help="Generate a combined Codex for OSS submission pack.")
+    )
+    pack.add_argument("--role", choices=["primary", "core"], default="primary")
+    pack.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
     return parser
 
 
@@ -83,4 +91,3 @@ def _write_output(value: str, output: Path | None) -> None:
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
-

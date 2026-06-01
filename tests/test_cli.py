@@ -61,6 +61,29 @@ class CliTests(unittest.TestCase):
             value = section.split("\n\n", 1)[1].strip()
             self.assertLessEqual(len(value), 500)
 
+    def test_submission_pack_combines_required_materials(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "submission-pack.md"
+            status = main(
+                [
+                    "submission-pack",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--role",
+                    "primary",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertTrue(text.startswith("# Codex for Open Source Submission Pack"))
+            self.assertIn("Codex for Open Source Submission Pack", text)
+            self.assertIn("Application Draft", text)
+            self.assertIn("Evidence Report", text)
+            self.assertIn("Codex Workflow Prompts", text)
+
 
 if __name__ == "__main__":
     unittest.main()

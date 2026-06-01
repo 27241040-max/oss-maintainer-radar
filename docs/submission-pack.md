@@ -20,6 +20,7 @@ Run:
 ```bash
 oss-radar audit --repo owner/repo --output reports/application-evidence.md
 oss-radar application --repo owner/repo --role primary --output reports/application-draft.md
+oss-radar submission-pack --repo owner/repo --role primary --output reports/submission-pack.md
 ```
 
 Then confirm:
@@ -47,4 +48,3 @@ will review outputs before taking action.
 Do not submit claims about broad adoption, downloads, maintainership, security
 need, or ecosystem importance unless you can verify them from public evidence
 or your actual repository permissions.
-

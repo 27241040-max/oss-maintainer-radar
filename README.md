@@ -54,6 +54,12 @@ Generate Codex prompts for maintainer workflows:
 oss-radar codex-prompts --fixture examples/sample_github_payload.json
 ```
 
+Create a combined submission pack:
+
+```bash
+oss-radar submission-pack --fixture examples/sample_github_payload.json --role primary --output reports/submission-pack.md
+```
+
 Check how the tool treats a brand-new project with little public evidence:
 
 ```bash
@@ -95,6 +101,8 @@ Use this tool to prepare an accurate application:
 2. Check whether the evidence supports your claims.
 3. Edit the generated text so every statement is true.
 4. Submit only public repositories and roles you can verify.
+
+For one combined file, run `oss-radar submission-pack --repo owner/repo --role primary`.
 
 See [docs/codex-for-oss-application.md](docs/codex-for-oss-application.md) for
 a field-by-field checklist.
