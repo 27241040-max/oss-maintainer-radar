@@ -36,7 +36,19 @@ class ProjectFileTests(unittest.TestCase):
 
         self.assertIn("27241040-max/oss-maintainer-radar@v0.5.1", text)
         self.assertIn("docs/action-usage.md", text)
+        self.assertIn("docs/scheduled-maintainer-workflow.md", text)
         self.assertIn("schemas/maintainer-report.schema.json", text)
+
+    def test_scheduled_workflow_doc_covers_issue_acceptance_criteria(self) -> None:
+        text = (ROOT / "docs" / "scheduled-maintainer-workflow.md").read_text(encoding="utf-8")
+
+        self.assertIn("workflow_dispatch", text)
+        self.assertIn("schedule:", text)
+        self.assertIn("gh run download", text)
+        self.assertIn("Stale Issues", text)
+        self.assertIn("Pull Requests Awaiting Review", text)
+        self.assertIn("Release Notes", text)
+        self.assertIn("Do not turn scheduled reports into adoption claims", text)
 
 
 if __name__ == "__main__":

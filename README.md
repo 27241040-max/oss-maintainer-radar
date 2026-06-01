@@ -182,6 +182,8 @@ template and [docs/github-actions.md](docs/github-actions.md) for a scheduled
 maintainer automation example.
 See [docs/action-usage.md](docs/action-usage.md) for reusable GitHub Action
 setup.
+See [docs/scheduled-maintainer-workflow.md](docs/scheduled-maintainer-workflow.md)
+for an end-to-end weekly workflow using scheduled report artifacts.
 See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.json)
 for the machine-readable report schema.
 See [docs/package-release.md](docs/package-release.md) for package build checks.

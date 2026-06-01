@@ -18,7 +18,9 @@ It can:
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
 print the token or commit generated reports back to the repository.
 
-See [action-usage.md](action-usage.md) for the reusable Action interface and
+See [action-usage.md](action-usage.md) for the reusable Action interface,
+[scheduled-maintainer-workflow.md](scheduled-maintainer-workflow.md) for an
+end-to-end maintainer loop, and
 [../schemas/maintainer-report.schema.json](../schemas/maintainer-report.schema.json)
 for the JSON report schema.
 
