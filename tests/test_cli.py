@@ -129,6 +129,7 @@ class CliTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
             self.assertIn("# Maintenance Scorecard", text)
             self.assertIn("Score:", text)
+            self.assertIn("pull requests", text)
             self.assertIn("Release practice", text)
 
     def test_action_plan_reports_prioritized_work(self) -> None:
@@ -148,6 +149,7 @@ class CliTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
             self.assertIn("# Maintainer Action Plan", text)
             self.assertIn("## Immediate", text)
+            self.assertIn("completed pull request", text)
             self.assertIn("## Evidence To Keep Current", text)
 
     def test_form_fields_can_use_applicant_profile(self) -> None:

@@ -218,6 +218,7 @@ class MaintainerReport:
     generated_at: datetime
     open_issue_count: int
     stale_issue_count: int
+    sampled_pull_request_count: int
     open_pull_request_count: int
     stale_pull_request_count: int
     label_counts: dict[str, int] = field(default_factory=dict)

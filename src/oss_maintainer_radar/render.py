@@ -39,6 +39,7 @@ def report_to_markdown(report: MaintainerReport) -> str:
             "",
             f"- Open issues in sample: {report.open_issue_count}",
             f"- Stale issues: {report.stale_issue_count}",
+            f"- Pull requests in sample: {report.sampled_pull_request_count}",
             f"- Open pull requests in sample: {report.open_pull_request_count}",
             f"- Pull requests awaiting attention: {report.stale_pull_request_count}",
             "",
@@ -117,7 +118,7 @@ def form_field_values(
                 f"The repo has {report.repository.stars} stars and {report.repository.forks} forks.",
                 *evidence_clauses,
                 *release_clauses,
-                f"Current maintenance surface includes {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')} in the sampled data.",
+                f"Current maintenance surface includes {_count(report.open_issue_count, 'open issue')} and {_count(report.sampled_pull_request_count, 'sampled pull request')}.",
                 "The project benefits from evidence-based triage, review, release management, and quality work.",
             ]
         )
@@ -349,14 +350,14 @@ def readiness_check(report: MaintainerReport, *, role: str) -> str:
         ),
         _check(
             "Maintenance workload evidence",
-            report.open_issue_count > 0 or report.open_pull_request_count > 0,
-            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')}.",
+            report.open_issue_count > 0 or report.sampled_pull_request_count > 0,
+            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.sampled_pull_request_count, 'pull request')}.",
             "A brand-new repo may not show ongoing triage or review work yet.",
         ),
         _check(
             "Review surface evidence",
-            report.open_pull_request_count > 0 or report.stale_pull_request_count > 0,
-            f"Sample has {_count(report.open_pull_request_count, 'open pull request')}.",
+            report.sampled_pull_request_count > 0,
+            f"Sample has {_count(report.sampled_pull_request_count, 'pull request')}.",
             "Show pull request review responsibilities from the public repository or existing project.",
         ),
         _check(
@@ -443,7 +444,7 @@ def _application_release_clauses(report: MaintainerReport) -> list[str]:
 def _score_dimensions(report: MaintainerReport) -> list[tuple[str, int, int, str]]:
     repo = report.repository
     adoption = repo.stars >= 10 or repo.forks >= 3 or report.evidence.has_adoption_signal()
-    has_workload = report.open_issue_count > 0 or report.open_pull_request_count > 0
+    has_workload = report.open_issue_count > 0 or report.sampled_pull_request_count > 0
     risk_penalty = min(20, len(report.risks) * 5)
 
     return [
@@ -465,7 +466,7 @@ def _score_dimensions(report: MaintainerReport) -> list[tuple[str, int, int, str
             "Maintenance surface",
             20 if has_workload else 0,
             20,
-            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')}."
+            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.sampled_pull_request_count, 'pull request')}."
             if has_workload
             else "No open issue or pull request surface was found in the sample.",
         ),
@@ -510,6 +511,9 @@ def _weekly_actions(report: MaintainerReport) -> list[str]:
         f"- Triage the current sample of {_count(report.open_issue_count, 'open issue')}.",
         "- Keep release notes tied to merged changes and public tags.",
     ]
+    completed_pr_count = max(0, report.sampled_pull_request_count - report.open_pull_request_count)
+    if completed_pr_count:
+        actions.append(f"- Review {_count(completed_pr_count, 'completed pull request')} for release-note impact.")
     if report.label_counts:
         top_labels = ", ".join(list(report.label_counts)[:5])
         actions.append(f"- Watch high-volume labels: {top_labels}.")

@@ -26,6 +26,7 @@ class AnalyzerTests(unittest.TestCase):
         self.assertEqual(report.repository.full_name, "example/oss-maintainer-radar")
         self.assertEqual(report.open_issue_count, 2)
         self.assertEqual(report.stale_issue_count, 1)
+        self.assertEqual(report.sampled_pull_request_count, 2)
         self.assertEqual(report.open_pull_request_count, 1)
         self.assertEqual(report.stale_pull_request_count, 1)
         self.assertIn("documentation", report.label_counts)

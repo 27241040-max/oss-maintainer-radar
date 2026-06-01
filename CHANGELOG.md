@@ -2,6 +2,12 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.2.1 - 2026-06-01
+
+- Updated GitHub Actions workflow dependencies.
+- Counted all sampled pull requests, not only currently open pull requests, in readiness and scorecard evidence.
+- Added completed pull request follow-up guidance to action plans.
+
 ## 0.2.0 - 2026-06-01
 
 - Added maintenance health scorecards for public repository checks.
