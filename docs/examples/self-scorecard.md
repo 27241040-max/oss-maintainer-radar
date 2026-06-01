@@ -1,6 +1,6 @@
 # Maintenance Scorecard: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T08:49:49.646453+00:00
+Generated: 2026-06-01T09:05:56.734820+00:00
 Window start: not set
 
 Score: 75/100
@@ -10,7 +10,7 @@ Score: 75/100
 - Repository availability: 20/20 - Public GitHub repository is active.
 - Adoption signal: 0/20 - Public adoption evidence is still weak.
 - Maintenance surface: 20/20 - Sample has 1 open issue and 3 pull requests.
-- Release practice: 20/20 - Latest release is v0.12.0.
+- Release practice: 20/20 - Latest release is v0.13.0.
 - Risk posture: 15/20 - 1 risk item(s) need review.
 
 ## Notes
