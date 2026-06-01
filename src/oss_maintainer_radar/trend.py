@@ -23,6 +23,7 @@ def trend_report(paths: list[Path]) -> str:
 
     snapshots = [_load_trend_snapshot(path) for path in paths]
     repository = snapshots[-1]["repository"]
+    warnings = _comparison_warnings(snapshots)
 
     lines = [
         f"# Maintainer Trend Report: {repository}",
@@ -37,10 +38,16 @@ def trend_report(paths: list[Path]) -> str:
     for snapshot in snapshots:
         lines.append(
             "- {path}: generated {generated_at}, score {score}, open issues {open_issues}, "
-            "stale issues {stale_issues}, review backlog {review_backlog}, releases {release_count}, risks {risk_count}".format(
+            "stale issues {stale_issues}, review backlog {review_backlog}, releases {release_count}, risks {risk_count}, "
+            "schema {schema_version}".format(
                 **snapshot
             )
         )
+
+    if warnings:
+        lines.extend(["", "## Warnings", ""])
+        for warning in warnings:
+            lines.append(f"- {warning}")
 
     lines.extend(["", "## Changes", ""])
     first = snapshots[0]
@@ -68,6 +75,7 @@ def trend_csv(paths: list[Path]) -> str:
     snapshots = [_load_trend_snapshot(path) for path in paths]
     first = snapshots[0]
     latest = snapshots[-1]
+    warnings = "; ".join(_comparison_warnings(snapshots))
     output = StringIO()
     writer = csv.DictWriter(
         output,
@@ -80,6 +88,7 @@ def trend_csv(paths: list[Path]) -> str:
             "latest_value",
             "delta",
             "direction",
+            "warnings",
         ],
     )
     writer.writeheader()
@@ -95,6 +104,7 @@ def trend_csv(paths: list[Path]) -> str:
                 "latest_value": latest[key],
                 "delta": delta,
                 "direction": _direction(delta, preferred),
+                "warnings": warnings,
             }
         )
     return output.getvalue()
@@ -108,6 +118,7 @@ def _load_trend_snapshot(path: Path) -> dict[str, Any]:
     return {
         "path": str(path),
         "repository": str(repository.get("full_name") or "unknown/unknown"),
+        "schema_version": str(payload.get("schema_version") or "unknown"),
         "generated_at": str(payload.get("generated_at") or "unknown"),
         "open_issues": _int_field(payload, "open_issue_count"),
         "stale_issues": _int_field(payload, "stale_issue_count"),
@@ -125,6 +136,36 @@ def _int_field(payload: dict[str, Any], key: str, *, list_count: bool = False) -
     if value in (None, ""):
         return 0
     return int(value)
+
+
+def _comparison_warnings(snapshots: list[dict[str, Any]]) -> list[str]:
+    warnings: list[str] = []
+    repositories = _unique_values(snapshot["repository"] for snapshot in snapshots)
+    schema_versions = _unique_values(snapshot["schema_version"] for snapshot in snapshots)
+
+    if len(repositories) > 1:
+        warnings.append(
+            "Compared reports are from different repositories: {values}. Treat deltas as review prompts only.".format(
+                values=", ".join(repositories)
+            )
+        )
+    if len(schema_versions) > 1:
+        warnings.append(
+            "Compared reports use different schema versions: {values}. Review compatibility before acting.".format(
+                values=", ".join(schema_versions)
+            )
+        )
+    return warnings
+
+
+def _unique_values(values) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if value not in seen:
+            seen.add(value)
+            result.append(value)
+    return result
 
 
 def _change_line(first: int, latest: int, preferred: str) -> str:

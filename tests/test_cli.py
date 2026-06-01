@@ -263,6 +263,7 @@ class CliTests(unittest.TestCase):
             self.assertIn("Release count: 1 -> 2 (+1, improved)", text)
             self.assertIn("Scorecard score: 55 -> 75 (+20, improved)", text)
             self.assertIn("does not predict project health", text)
+            self.assertNotIn("## Warnings", text)
 
     def test_trend_reports_worsening_saved_reports(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -305,6 +306,7 @@ class CliTests(unittest.TestCase):
                     "latest_value": "4",
                     "delta": "-4",
                     "direction": "improved",
+                    "warnings": "",
                 },
             )
             release_row = rows[3]
@@ -330,6 +332,81 @@ class CliTests(unittest.TestCase):
             self.assertEqual(rows["Release count"]["direction"], "unchanged")
             self.assertEqual(rows["Scorecard score"]["delta"], "-25")
             self.assertEqual(rows["Scorecard score"]["direction"], "worsened")
+
+    def test_trend_warns_on_repository_and_schema_mismatch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.md"
+            _write_report(
+                first,
+                repository="example/first",
+                schema_version="1.1",
+                open_issues=8,
+                stale_issues=3,
+                review_backlog=2,
+                releases=1,
+                risks=2,
+                score=55,
+            )
+            _write_report(
+                latest,
+                repository="example/latest",
+                schema_version="1.2",
+                open_issues=4,
+                stale_issues=1,
+                review_backlog=0,
+                releases=2,
+                risks=1,
+                score=75,
+            )
+
+            status = main(["trend", str(first), str(latest), "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("## Warnings", text)
+            self.assertIn("different repositories: example/first, example/latest", text)
+            self.assertIn("different schema versions: 1.1, 1.2", text)
+            self.assertIn("Open issues: 8 -> 4 (-4, improved)", text)
+
+    def test_trend_csv_includes_warning_column_for_mismatches(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.csv"
+            _write_report(
+                first,
+                repository="example/first",
+                schema_version="1.1",
+                open_issues=8,
+                stale_issues=3,
+                review_backlog=2,
+                releases=1,
+                risks=2,
+                score=55,
+            )
+            _write_report(
+                latest,
+                repository="example/latest",
+                schema_version="1.2",
+                open_issues=4,
+                stale_issues=1,
+                review_backlog=0,
+                releases=2,
+                risks=1,
+                score=75,
+            )
+
+            status = main(["trend", str(first), str(latest), "--format", "csv", "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            rows = list(csv.DictReader(output.read_text(encoding="utf-8").splitlines()))
+            self.assertEqual(len(rows), 6)
+            warning = rows[0]["warnings"]
+            self.assertIn("different repositories: example/first, example/latest", warning)
+            self.assertIn("different schema versions: 1.1, 1.2", warning)
+            self.assertTrue(all(row["warnings"] == warning for row in rows))
 
     def test_validate_report_passes_generated_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -387,6 +464,8 @@ class CliTests(unittest.TestCase):
 def _write_report(
     path: Path,
     *,
+    repository: str = "example/repo",
+    schema_version: str = "1.2",
     open_issues: int,
     stale_issues: int,
     review_backlog: int,
@@ -395,7 +474,8 @@ def _write_report(
     score: int,
 ) -> None:
     payload = {
-        "repository": {"full_name": "example/repo"},
+        "schema_version": schema_version,
+        "repository": {"full_name": repository},
         "generated_at": path.stem,
         "open_issue_count": open_issues,
         "stale_issue_count": stale_issues,

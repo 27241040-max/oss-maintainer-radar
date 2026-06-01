@@ -16,6 +16,7 @@ then produces:
 - normalized common maintainer labels while preserving original label text
 - local JSON report validation against the published report schema
 - Markdown and CSV trend summaries across saved reports
+- trend warnings for mismatched repositories or report schema versions
 - Codex task prompts maintainers can paste into their normal review workflow
 - optional Codex for Open Source form-field drafts for projects that already
   have truthful public evidence
@@ -145,7 +146,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.10.0
+- uses: 27241040-max/oss-maintainer-radar@v0.11.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -224,6 +225,7 @@ help with:
 - deterministic release-note grouping
 - trend reports across saved JSON snapshots
 - CSV summaries for spreadsheet or dashboard review
+- guardrails for mismatched trend inputs
 - schema validation for downloaded workflow artifacts
 - regression-risk checklists
 - security-review routing

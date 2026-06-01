@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.10.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.11.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -78,6 +78,8 @@ file matches the current report schema; a `FAIL` summary should be fixed or
 kept out of trend reports until a maintainer reviews the mismatch.
 Save CSV summaries next to downloaded artifacts when you want spreadsheet or
 dashboard rows without parsing Markdown.
+Trend warnings for repository or schema mismatches are review prompts, not
+automated rejection decisions.
 
 ## Maintainer Review
 

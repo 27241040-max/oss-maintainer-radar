@@ -96,4 +96,5 @@ Use trend reports to:
 - compare saved reports from the same repository
 - review changes in open issues, stale issues, review backlog, releases, risks, and scorecard score
 - save CSV rows for spreadsheet or dashboard review without parsing Markdown
+- treat repository or schema mismatch warnings as prompts to review inputs
 - avoid turning trend deltas into adoption or ecosystem-importance claims

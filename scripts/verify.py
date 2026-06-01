@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -130,6 +131,25 @@ def main() -> int:
                 "trend",
                 str(report),
                 str(report),
+                "--format",
+                "csv",
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
+        mismatched = Path(report_tmp) / "mismatched.json"
+        mismatched_payload = json.loads(report.read_text(encoding="utf-8"))
+        mismatched_payload["repository"]["full_name"] = "example/other"
+        mismatched.write_text(json.dumps(mismatched_payload), encoding="utf-8")
+        run(
+            "trend mismatched CSV warning",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "trend",
+                str(report),
+                str(mismatched),
                 "--format",
                 "csv",
             ],

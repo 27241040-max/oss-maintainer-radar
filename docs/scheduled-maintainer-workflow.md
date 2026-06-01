@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.10.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.11.0
         with:
           target_repo: ${{ inputs.target_repo || github.repository }}
           stale_days: ${{ inputs.stale_days || '30' }}
@@ -116,7 +116,9 @@ Validate downloaded JSON artifacts before trend analysis. Use trend reports to
 compare open issues, stale issues, review backlog, release count, risk count,
 and scorecard score. Save CSV summaries next to artifacts when maintainers want
 spreadsheet or dashboard rows. Treat every change as a prompt for maintainer
-review, not as an automated project-health prediction.
+review, not as an automated project-health prediction. If trend output warns
+about mismatched repositories or schema versions, review the inputs before
+acting on the deltas.
 
 ## Weekly Triage Loop
 

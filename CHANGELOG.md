@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.11.0 - 2026-06-01
+
+- Added trend comparison warnings for reports from different repositories.
+- Added trend comparison warnings for mixed `schema_version` values.
+- Added a `warnings` column to CSV trend output.
+- Documented that trend warnings are maintainer review prompts, not automated rejection.
+
 ## 0.10.0 - 2026-06-01
 
 - Added CSV output for `oss-radar trend` with `--format csv`.
