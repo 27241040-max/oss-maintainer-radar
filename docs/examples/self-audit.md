@@ -1,6 +1,6 @@
 # Maintainer Radar: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T07:17:19.765358+00:00
+Generated: 2026-06-01T07:27:12.733072+00:00
 Window start: not set
 
 ## Repository
@@ -18,7 +18,7 @@ Window start: not set
 
 ## Workload
 
-- Open issues in sample: 2
+- Open issues in sample: 1
 - Stale issues: 0
 - Pull requests in sample: 3
 - Open pull requests in sample: 0
@@ -28,7 +28,6 @@ Window start: not set
 
 - documentation: 1
 - good first issue: 1
-- enhancement: 1
 
 ## Stale Issues
 
@@ -40,16 +39,16 @@ Window start: not set
 
 ## Release Notes
 
-- Latest published release is v0.5.0.
+- Latest published release is v0.5.1.
 - Recent completed pull requests to review for notes: #1 Bump actions/checkout from 4 to 6, #2 Bump actions/upload-artifact from 4 to 7, #3 Bump actions/setup-python from 5 to 6.
 
 ## Qualification Signals
 
 - 27241040-max/oss-maintainer-radar is public at https://github.com/27241040-max/oss-maintainer-radar.
-- Repository signals: 0 stars, 0 forks, 2 open GitHub issues.
+- Repository signals: 0 stars, 0 forks, 1 open GitHub issues.
 - Adoption signals are still early; do not overstate usage.
 - Sample includes 3 pull request(s), showing active review surface.
-- Sample includes 6 release record(s), showing release management surface.
+- Sample includes 7 release record(s), showing release management surface.
 
 ## Application Risks
 
