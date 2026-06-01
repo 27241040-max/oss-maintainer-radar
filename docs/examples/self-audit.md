@@ -1,6 +1,6 @@
 # Maintainer Radar: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T07:36:25.966011+00:00
+Generated: 2026-06-01T07:45:26.961471+00:00
 Window start: not set
 
 ## Repository
@@ -38,8 +38,15 @@ Window start: not set
 
 ## Release Notes
 
-- Latest published release is v0.5.1.
+- Latest published release is v0.6.0.
 - Recent completed pull requests to review for notes: #1 Bump actions/checkout from 4 to 6, #2 Bump actions/upload-artifact from 4 to 7, #3 Bump actions/setup-python from 5 to 6.
+
+## Release Note Groups
+
+- Dependencies
+  - #1 Bump actions/checkout from 4 to 6 [dependencies, github_actions] https://github.com/27241040-max/oss-maintainer-radar/pull/1
+  - #2 Bump actions/upload-artifact from 4 to 7 [dependencies, github_actions] https://github.com/27241040-max/oss-maintainer-radar/pull/2
+  - #3 Bump actions/setup-python from 5 to 6 [dependencies, github_actions] https://github.com/27241040-max/oss-maintainer-radar/pull/3
 
 ## Qualification Signals
 
@@ -47,7 +54,7 @@ Window start: not set
 - Repository signals: 0 stars, 0 forks, 1 open GitHub issues.
 - Adoption signals are still early; do not overstate usage.
 - Sample includes 3 pull request(s), showing active review surface.
-- Sample includes 7 release record(s), showing release management surface.
+- Sample includes 8 release record(s), showing release management surface.
 
 ## Application Risks
 

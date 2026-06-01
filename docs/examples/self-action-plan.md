@@ -1,6 +1,6 @@
 # Maintainer Action Plan: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T07:36:26.111794+00:00
+Generated: 2026-06-01T07:45:27.112816+00:00
 Window start: not set
 
 ## Immediate
@@ -13,6 +13,7 @@ Window start: not set
 - Triage the current sample of 1 open issue.
 - Keep release notes tied to merged changes and public tags.
 - Review 3 completed pull requests for release-note impact.
+- Draft release notes from deterministic groups: Dependencies.
 - Watch high-volume labels: enhancement.
 
 ## Evidence To Keep Current
