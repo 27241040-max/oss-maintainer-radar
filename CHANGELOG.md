@@ -2,6 +2,12 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.3.0 - 2026-06-01
+
+- Added a reusable composite GitHub Action for scheduled maintainer reports.
+- Updated the bundled Maintainer Radar workflow to exercise the local action.
+- Added GitHub Action usage documentation for downstream repositories.
+
 ## 0.2.1 - 2026-06-01
 
 - Updated GitHub Actions workflow dependencies.

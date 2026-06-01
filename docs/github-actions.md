@@ -1,18 +1,23 @@
 # GitHub Actions Automation
 
 The repository includes `.github/workflows/maintainer-radar.yml` as an example
-maintainer automation workflow.
+maintainer automation workflow. It uses the reusable action defined in
+`action.yml`, so the project continuously exercises the same interface that
+other repositories can use.
 
 It can:
 
 - run every Monday
 - run manually with a `target_repo` input
 - generate a maintainer report
+- generate a scorecard and action plan
 - generate Codex prompts for triage, review, and release readiness
 - upload the generated files as a workflow artifact
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
 print the token or commit generated reports back to the repository.
+
+See [action-usage.md](action-usage.md) for the reusable Action interface.
 
 ## Manual Run
 
@@ -31,4 +36,3 @@ Source program describes: triage support, review preparation, release workflow
 support, and core OSS maintenance. If you apply for API credits, explain how
 credits would enhance these workflows while keeping maintainer review in the
 loop.
-

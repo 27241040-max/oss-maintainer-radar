@@ -28,20 +28,13 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Install
-        run: python -m pip install -e .
-      - name: Generate maintainer report
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p reports
-          oss-radar audit \
-            --repo "$TARGET_REPO" \
-            --stale-days "$STALE_DAYS" \
-            --output reports/maintainer-radar.md
-          oss-radar codex-prompts \
-            --repo "$TARGET_REPO" \
-            --output reports/codex-prompts.md
+      - name: Generate maintainer reports
+        uses: ./
+        with:
+          target_repo: ${{ env.TARGET_REPO }}
+          stale_days: ${{ env.STALE_DAYS }}
+          output_dir: reports
+          github_token: ${{ github.token }}
       - uses: actions/upload-artifact@v7
         with:
           name: maintainer-radar-report

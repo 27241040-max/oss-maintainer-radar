@@ -116,6 +116,20 @@ oss-radar audit --repo psf/requests
 If you have a `GITHUB_TOKEN`, the CLI will use it for higher rate limits. The
 token is never printed.
 
+## GitHub Action
+
+Use OSS Maintainer Radar directly in another repository:
+
+```yaml
+- uses: 27241040-max/oss-maintainer-radar@v0.3.0
+  with:
+    github_token: ${{ github.token }}
+    output_dir: reports
+```
+
+See [docs/action-usage.md](docs/action-usage.md) for a complete scheduled
+workflow example.
+
 ## Output Formats
 
 Markdown is the default:
@@ -156,6 +170,8 @@ a field-by-field checklist.
 See [docs/submission-pack.md](docs/submission-pack.md) for a submission prep
 template and [docs/github-actions.md](docs/github-actions.md) for a scheduled
 maintainer automation example.
+See [docs/action-usage.md](docs/action-usage.md) for reusable GitHub Action
+setup.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for

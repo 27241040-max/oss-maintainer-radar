@@ -1,0 +1,86 @@
+name: OSS Maintainer Radar
+description: Generate evidence-based maintainer reports, scorecards, action plans, and Codex prompts.
+author: OSS Maintainer Radar contributors
+
+branding:
+  icon: activity
+  color: blue
+
+inputs:
+  target_repo:
+    description: GitHub repository to audit, for example owner/repo. Defaults to the current repository.
+    required: false
+    default: ""
+  stale_days:
+    description: Days without updates before an issue is considered stale.
+    required: false
+    default: "30"
+  output_dir:
+    description: Directory where generated reports are written.
+    required: false
+    default: reports
+  github_token:
+    description: Optional token used only for GitHub API rate limits.
+    required: false
+    default: ""
+
+outputs:
+  report_path:
+    description: Path to the generated maintainer report.
+    value: ${{ steps.paths.outputs.report_path }}
+  scorecard_path:
+    description: Path to the generated maintenance scorecard.
+    value: ${{ steps.paths.outputs.scorecard_path }}
+  action_plan_path:
+    description: Path to the generated maintainer action plan.
+    value: ${{ steps.paths.outputs.action_plan_path }}
+  prompts_path:
+    description: Path to the generated Codex prompt pack.
+    value: ${{ steps.paths.outputs.prompts_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve output paths
+      id: paths
+      shell: bash
+      run: |
+        set -euo pipefail
+        output_dir="${{ inputs.output_dir }}"
+        mkdir -p "$output_dir"
+        echo "report_path=$output_dir/maintainer-radar.md" >> "$GITHUB_OUTPUT"
+        echo "scorecard_path=$output_dir/scorecard.md" >> "$GITHUB_OUTPUT"
+        echo "action_plan_path=$output_dir/action-plan.md" >> "$GITHUB_OUTPUT"
+        echo "prompts_path=$output_dir/codex-prompts.md" >> "$GITHUB_OUTPUT"
+
+    - name: Install OSS Maintainer Radar
+      shell: bash
+      run: python -m pip install "${{ github.action_path }}"
+
+    - name: Generate maintainer artifacts
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: |
+        set -euo pipefail
+        target_repo="${{ inputs.target_repo }}"
+        if [ -z "$target_repo" ]; then
+          target_repo="$GITHUB_REPOSITORY"
+        fi
+
+        oss-radar audit \
+          --repo "$target_repo" \
+          --stale-days "${{ inputs.stale_days }}" \
+          --output "${{ steps.paths.outputs.report_path }}"
+        oss-radar scorecard \
+          --repo "$target_repo" \
+          --stale-days "${{ inputs.stale_days }}" \
+          --output "${{ steps.paths.outputs.scorecard_path }}"
+        oss-radar action-plan \
+          --repo "$target_repo" \
+          --stale-days "${{ inputs.stale_days }}" \
+          --output "${{ steps.paths.outputs.action_plan_path }}"
+        oss-radar codex-prompts \
+          --repo "$target_repo" \
+          --stale-days "${{ inputs.stale_days }}" \
+          --output "${{ steps.paths.outputs.prompts_path }}"
