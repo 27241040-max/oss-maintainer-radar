@@ -1,6 +1,7 @@
 # Maintainer Radar: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T07:09:28.415957+00:00
+Generated: 2026-06-01T07:17:19.765358+00:00
+Window start: not set
 
 ## Repository
 
@@ -39,7 +40,7 @@ Generated: 2026-06-01T07:09:28.415957+00:00
 
 ## Release Notes
 
-- Latest published release is v0.4.0.
+- Latest published release is v0.5.0.
 - Recent completed pull requests to review for notes: #1 Bump actions/checkout from 4 to 6, #2 Bump actions/upload-artifact from 4 to 7, #3 Bump actions/setup-python from 5 to 6.
 
 ## Qualification Signals
@@ -48,7 +49,7 @@ Generated: 2026-06-01T07:09:28.415957+00:00
 - Repository signals: 0 stars, 0 forks, 2 open GitHub issues.
 - Adoption signals are still early; do not overstate usage.
 - Sample includes 3 pull request(s), showing active review surface.
-- Sample includes 5 release record(s), showing release management surface.
+- Sample includes 6 release record(s), showing release management surface.
 
 ## Application Risks
 
