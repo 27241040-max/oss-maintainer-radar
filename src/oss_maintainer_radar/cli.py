@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from .analyzer import analyze_snapshot
-from .github import fetch_snapshot, load_evidence, load_snapshot
+from .github import fetch_snapshot, load_applicant, load_evidence, load_snapshot
 from .render import (
     application_draft,
     codex_prompts,
@@ -24,17 +24,18 @@ def main(argv: list[str] | None = None) -> int:
     try:
         snapshot = _snapshot_from_args(args)
         report = analyze_snapshot(snapshot, stale_days=args.stale_days)
+        applicant = load_applicant(args.applicant) if getattr(args, "applicant", None) else None
 
         if args.command == "audit":
             output = report_to_json(report) if args.format == "json" else report_to_markdown(report)
         elif args.command == "application":
-            output = application_draft(report, role=args.role)
+            output = application_draft(report, role=args.role, applicant=applicant)
         elif args.command == "codex-prompts":
             output = codex_prompts(report)
         elif args.command == "form-fields":
-            output = form_fields(report, role=args.role)
+            output = form_fields(report, role=args.role, applicant=applicant)
         elif args.command == "submission-pack":
-            output = submission_pack(report, role=args.role)
+            output = submission_pack(report, role=args.role, applicant=applicant)
         elif args.command == "readiness":
             output = readiness_check(report, role=args.role)
         else:
@@ -96,6 +97,7 @@ def _add_snapshot_args(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     source.add_argument("--repo", help="GitHub repo as owner/name or https://github.com/owner/name.")
     source.add_argument("--fixture", type=Path, help="Path to a saved GitHub snapshot JSON file.")
     parser.add_argument("--evidence", type=Path, help="Path to optional adoption and maintainer evidence JSON.")
+    parser.add_argument("--applicant", type=Path, help="Path to optional private applicant profile JSON.")
     parser.add_argument("--stale-days", type=int, default=30, help="Days without update before an issue is stale.")
     return parser
 

@@ -27,6 +27,8 @@ Expected artifacts:
 
 The source distribution includes docs, examples, tests, and project policy files
 through `MANIFEST.in`.
+It also includes `examples/applicant.example.json` as a safe template; real
+`applicant.json` files are intentionally ignored by Git.
 
 ## Verify The Wheel
 

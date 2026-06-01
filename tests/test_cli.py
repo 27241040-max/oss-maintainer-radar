@@ -12,6 +12,7 @@ from oss_maintainer_radar.render import application_draft
 
 FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
 EVIDENCE_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "evidence.json"
+APPLICANT_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "applicant.example.json"
 
 
 class CliTests(unittest.TestCase):
@@ -107,6 +108,30 @@ class CliTests(unittest.TestCase):
             self.assertIn("## Public GitHub repository URL", text)
             self.assertIn("Character count:", text)
             self.assertIn("<fill manually>", text)
+
+    def test_form_fields_can_use_applicant_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "form-fields.md"
+            status = main(
+                [
+                    "form-fields",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--applicant",
+                    str(APPLICANT_FIXTURE),
+                    "--role",
+                    "primary",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Jane", text)
+            self.assertIn("jane@example.com", text)
+            self.assertIn("jane-maintainer", text)
+            self.assertIn("org_...", text)
 
     def test_readiness_flags_review_items_for_new_projects(self) -> None:
         fixture = Path(__file__).resolve().parents[1] / "examples" / "new_project_payload.json"

@@ -9,8 +9,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from .models import RepoSnapshot
-from .models import Evidence
+from .models import ApplicantProfile, Evidence, RepoSnapshot
 
 
 GITHUB_API = "https://api.github.com"
@@ -24,6 +23,11 @@ def load_snapshot(path: str | Path) -> RepoSnapshot:
 def load_evidence(path: str | Path) -> Evidence:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     return Evidence.from_payload(payload)
+
+
+def load_applicant(path: str | Path) -> ApplicantProfile:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    return ApplicantProfile.from_payload(payload)
 
 
 def fetch_snapshot(repo: str, *, token: str | None = None, per_page: int = 100) -> RepoSnapshot:

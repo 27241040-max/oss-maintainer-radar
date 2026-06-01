@@ -27,6 +27,10 @@ oss-radar submission-pack --repo owner/repo --role primary --output reports/subm
 oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
 
+To prefill private fields without committing them, copy
+`examples/applicant.example.json` to ignored `applicant.json`, edit it, and pass
+`--applicant applicant.json` to `form-fields` or `submission-pack`.
+
 If you have verified evidence outside GitHub stars and forks, create an evidence
 file:
 

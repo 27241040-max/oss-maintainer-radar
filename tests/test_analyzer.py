@@ -5,12 +5,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from oss_maintainer_radar.analyzer import analyze_snapshot
-from oss_maintainer_radar.github import load_evidence, load_snapshot, parse_repo_ref
+from oss_maintainer_radar.github import load_applicant, load_evidence, load_snapshot, parse_repo_ref
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
 NEW_PROJECT_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "new_project_payload.json"
 EVIDENCE_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "evidence.json"
+APPLICANT_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "applicant.example.json"
 
 
 class AnalyzerTests(unittest.TestCase):
@@ -63,6 +64,13 @@ class AnalyzerTests(unittest.TestCase):
         self.assertEqual(report.evidence.monthly_downloads, 5200)
         self.assertTrue(any("5200 monthly downloads" in signal for signal in report.qualification_signals))
         self.assertFalse(any("Low public adoption" in risk for risk in report.risks))
+
+    def test_load_applicant_profile(self) -> None:
+        applicant = load_applicant(APPLICANT_FIXTURE)
+
+        self.assertEqual(applicant.first_name, "Jane")
+        self.assertEqual(applicant.github_username, "jane-maintainer")
+        self.assertEqual(applicant.interest, "API credits")
 
 
 if __name__ == "__main__":

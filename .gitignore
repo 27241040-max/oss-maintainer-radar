@@ -10,6 +10,9 @@ dist/
 build/
 *.egg-info/
 reports/
+applicant.json
+applicant.local.json
+.private/
 .venv/
 venv/
 .env

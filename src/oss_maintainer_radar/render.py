@@ -4,7 +4,7 @@ import json
 import textwrap
 from dataclasses import asdict
 
-from .models import MaintainerReport, WorkItem
+from .models import ApplicantProfile, MaintainerReport, WorkItem
 
 
 def report_to_json(report: MaintainerReport) -> str:
@@ -73,8 +73,8 @@ def report_to_markdown(report: MaintainerReport) -> str:
     return "\n".join(lines) + "\n"
 
 
-def application_draft(report: MaintainerReport, *, role: str) -> str:
-    fields = form_field_values(report, role=role)
+def application_draft(report: MaintainerReport, *, role: str, applicant: ApplicantProfile | None = None) -> str:
+    fields = form_field_values(report, role=role, applicant=applicant)
 
     return textwrap.dedent(
         f"""\
@@ -101,7 +101,13 @@ def application_draft(report: MaintainerReport, *, role: str) -> str:
     )
 
 
-def form_field_values(report: MaintainerReport, *, role: str) -> dict[str, str]:
+def form_field_values(
+    report: MaintainerReport,
+    *,
+    role: str,
+    applicant: ApplicantProfile | None = None,
+) -> dict[str, str]:
+    applicant = applicant or ApplicantProfile()
     evidence_clauses = _application_evidence_clauses(report)
     qualifies = _fit_500(
         " ".join(
@@ -122,23 +128,28 @@ def form_field_values(report: MaintainerReport, *, role: str) -> dict[str, str]:
     )
 
     return {
-        "First name": "<fill manually>",
-        "Last name": "<fill manually>",
-        "Email associated with your ChatGPT account": "<fill manually>",
-        "Public GitHub username": "<fill manually>",
+        "First name": _manual(applicant.first_name),
+        "Last name": _manual(applicant.last_name),
+        "Email associated with your ChatGPT account": _manual(applicant.chatgpt_email),
+        "Public GitHub username": _manual(applicant.github_username),
         "Public GitHub repository URL": report.repository.url or "<publish repository first>",
         "Maintainer role": f"{role} maintainer",
         "Describe your role": f"{role.title()} maintainer. I triage issues, review pull requests, manage releases, and help preserve project quality.",
         "Why does this repository qualify?": qualifies,
-        "Interest": "API credits",
-        "OpenAI organization ID": "<fill manually>",
+        "Interest": applicant.interest or "API credits",
+        "OpenAI organization ID": _manual(applicant.openai_org_id),
         "How will you use API credits?": credits,
         "Anything else?": anything_else,
     }
 
 
-def form_fields(report: MaintainerReport, *, role: str) -> str:
-    fields = form_field_values(report, role=role)
+def form_fields(
+    report: MaintainerReport,
+    *,
+    role: str,
+    applicant: ApplicantProfile | None = None,
+) -> str:
+    fields = form_field_values(report, role=role, applicant=applicant)
     limited_fields = {
         "Why does this repository qualify?",
         "How will you use API credits?",
@@ -201,7 +212,12 @@ def codex_prompts(report: MaintainerReport) -> str:
     )
 
 
-def submission_pack(report: MaintainerReport, *, role: str) -> str:
+def submission_pack(
+    report: MaintainerReport,
+    *,
+    role: str,
+    applicant: ApplicantProfile | None = None,
+) -> str:
     repo = report.repository
     lines = [
         "# Codex for Open Source Submission Pack",
@@ -221,11 +237,11 @@ def submission_pack(report: MaintainerReport, *, role: str) -> str:
         "",
         "## Application Draft",
         "",
-        application_draft(report, role=role).strip(),
+        application_draft(report, role=role, applicant=applicant).strip(),
         "",
         "## Form Fields",
         "",
-        form_fields(report, role=role).strip(),
+        form_fields(report, role=role, applicant=applicant).strip(),
         "",
         "## Evidence Report",
         "",
@@ -394,3 +410,7 @@ def _check(name: str, passed: bool, success: str, failure: str) -> str:
     status = "PASS" if passed else "REVIEW"
     detail = success if passed else failure
     return f"[{status}] {name}: {detail}"
+
+
+def _manual(value: str) -> str:
+    return value if value else "<fill manually>"

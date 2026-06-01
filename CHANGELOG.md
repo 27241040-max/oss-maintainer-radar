@@ -15,4 +15,5 @@ All notable changes to OSS Maintainer Radar are documented here.
 - Added package build documentation and CI package-build verification.
 - Added a local verification script for tests, CLI smoke checks, sdist inspection, and wheel installation.
 - Added a final submission checklist for public repo publishing and private form fields.
+- Added local applicant profile JSON support for prefilled private form fields without committing personal data.
 - Added tests, documentation, issue templates, CI, and maintainer automation workflow.

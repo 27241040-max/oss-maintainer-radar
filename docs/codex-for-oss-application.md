@@ -53,6 +53,9 @@ For downloads, dependents, or ecosystem importance that GitHub does not expose,
 create a JSON evidence file and pass `--evidence evidence.json`. Only include
 claims that have public source URLs.
 
+For private applicant fields, copy `examples/applicant.example.json` to ignored
+`applicant.json`, edit it locally, and pass `--applicant applicant.json`.
+
 Then check every generated claim:
 
 - Do you actually have maintainer permissions?

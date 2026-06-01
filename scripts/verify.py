@@ -17,6 +17,7 @@ def main() -> int:
         ("example JSON", [sys.executable, "-m", "json.tool", "examples/sample_github_payload.json"], subprocess.DEVNULL),
         ("new project JSON", [sys.executable, "-m", "json.tool", "examples/new_project_payload.json"], subprocess.DEVNULL),
         ("evidence JSON", [sys.executable, "-m", "json.tool", "examples/evidence.json"], subprocess.DEVNULL),
+        ("applicant JSON", [sys.executable, "-m", "json.tool", "examples/applicant.example.json"], subprocess.DEVNULL),
         (
             "fixture audit",
             [
@@ -40,6 +41,8 @@ def main() -> int:
                 "examples/sample_github_payload.json",
                 "--evidence",
                 "examples/evidence.json",
+                "--applicant",
+                "examples/applicant.example.json",
                 "--role",
                 "primary",
             ],
@@ -97,6 +100,7 @@ def inspect_sdist(source: Path) -> None:
         "README.md",
         "docs/package-release.md",
         "examples/evidence.json",
+        "examples/applicant.example.json",
         "tests/test_cli.py",
     ]
     missing = [suffix for suffix in required_suffixes if not any(item.endswith(suffix) for item in files)]

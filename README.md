@@ -76,6 +76,16 @@ oss-radar submission-pack \
   --output reports/submission-pack.md
 ```
 
+Fill private form fields from a local file that should not be committed:
+
+```bash
+cp examples/applicant.example.json applicant.json
+oss-radar form-fields \
+  --fixture examples/sample_github_payload.json \
+  --applicant applicant.json \
+  --role primary
+```
+
 Run a conservative readiness self-check:
 
 ```bash
@@ -128,6 +138,7 @@ For one combined file, run `oss-radar submission-pack --repo owner/repo --role p
 For copy-paste fields, run `oss-radar form-fields --repo owner/repo --role primary`.
 For a risk-oriented self-check, run `oss-radar readiness --repo owner/repo --role primary`.
 If you have verified downloads, dependents, or ecosystem-importance evidence, put it in a JSON file shaped like `examples/evidence.json` and pass `--evidence path/to/evidence.json`.
+If you want to prefill private form fields locally, copy `examples/applicant.example.json` to ignored `applicant.json` and pass `--applicant applicant.json`.
 
 See [docs/codex-for-oss-application.md](docs/codex-for-oss-application.md) for
 a field-by-field checklist.

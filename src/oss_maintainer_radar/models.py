@@ -183,6 +183,27 @@ class Evidence:
 
 
 @dataclass(frozen=True)
+class ApplicantProfile:
+    first_name: str = ""
+    last_name: str = ""
+    chatgpt_email: str = ""
+    github_username: str = ""
+    openai_org_id: str = ""
+    interest: str = "API credits"
+
+    @classmethod
+    def from_payload(cls, payload: dict[str, Any]) -> "ApplicantProfile":
+        return cls(
+            first_name=str(payload.get("first_name") or ""),
+            last_name=str(payload.get("last_name") or ""),
+            chatgpt_email=str(payload.get("chatgpt_email") or payload.get("email") or ""),
+            github_username=str(payload.get("github_username") or ""),
+            openai_org_id=str(payload.get("openai_org_id") or ""),
+            interest=str(payload.get("interest") or "API credits"),
+        )
+
+
+@dataclass(frozen=True)
 class WorkItem:
     number: int
     title: str
