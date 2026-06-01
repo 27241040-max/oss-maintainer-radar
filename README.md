@@ -121,7 +121,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.3.0
+- uses: 27241040-max/oss-maintainer-radar@v0.4.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -172,6 +172,8 @@ template and [docs/github-actions.md](docs/github-actions.md) for a scheduled
 maintainer automation example.
 See [docs/action-usage.md](docs/action-usage.md) for reusable GitHub Action
 setup.
+See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.json)
+for the machine-readable report schema.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for

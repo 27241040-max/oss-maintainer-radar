@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.3.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.4.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -36,6 +36,7 @@ jobs:
 The action writes:
 
 - `reports/maintainer-radar.md`
+- `reports/maintainer-radar.json`
 - `reports/scorecard.md`
 - `reports/action-plan.md`
 - `reports/codex-prompts.md`
@@ -46,6 +47,9 @@ The action writes:
 - `stale_days`: days without updates before an issue is considered stale; defaults to `30`.
 - `output_dir`: directory for generated files; defaults to `reports`.
 - `github_token`: optional token for GitHub API rate limits.
+
+The JSON report follows
+[`schemas/maintainer-report.schema.json`](../schemas/maintainer-report.schema.json).
 
 ## Maintainer Review
 

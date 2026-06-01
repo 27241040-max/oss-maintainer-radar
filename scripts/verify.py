@@ -18,6 +18,7 @@ def main() -> int:
         ("new project JSON", [sys.executable, "-m", "json.tool", "examples/new_project_payload.json"], subprocess.DEVNULL),
         ("evidence JSON", [sys.executable, "-m", "json.tool", "examples/evidence.json"], subprocess.DEVNULL),
         ("applicant JSON", [sys.executable, "-m", "json.tool", "examples/applicant.example.json"], subprocess.DEVNULL),
+        ("report schema JSON", [sys.executable, "-m", "json.tool", "schemas/maintainer-report.schema.json"], subprocess.DEVNULL),
         (
             "fixture audit",
             [
@@ -27,6 +28,20 @@ def main() -> int:
                 "audit",
                 "--fixture",
                 "examples/sample_github_payload.json",
+            ],
+            subprocess.DEVNULL,
+        ),
+        (
+            "fixture audit JSON",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "audit",
+                "--fixture",
+                "examples/sample_github_payload.json",
+                "--format",
+                "json",
             ],
             subprocess.DEVNULL,
         ),
@@ -100,6 +115,8 @@ def inspect_sdist(source: Path) -> None:
         "README.md",
         "docs/package-release.md",
         "examples/evidence.json",
+        "schemas/maintainer-report.schema.json",
+        "action.yml",
         "examples/applicant.example.json",
         "tests/test_cli.py",
     ]

@@ -8,7 +8,21 @@ from .models import ApplicantProfile, MaintainerReport, WorkItem
 
 
 def report_to_json(report: MaintainerReport) -> str:
-    return json.dumps(asdict(report), default=str, ensure_ascii=False, indent=2)
+    return json.dumps(report_to_dict(report), ensure_ascii=False, indent=2)
+
+
+def report_to_dict(report: MaintainerReport) -> dict:
+    data = asdict(report)
+    data["schema_version"] = "1.0"
+    data["generated_at"] = report.generated_at.isoformat()
+    if report.latest_release and data["latest_release"]:
+        data["latest_release"]["published_at"] = (
+            report.latest_release.published_at.isoformat()
+            if report.latest_release.published_at
+            else None
+        )
+    data["scorecard"] = _scorecard_dict(report)
+    return data
 
 
 def report_to_markdown(report: MaintainerReport) -> str:
@@ -216,9 +230,7 @@ def codex_prompts(report: MaintainerReport) -> str:
 
 
 def maintenance_scorecard(report: MaintainerReport) -> str:
-    dimensions = _score_dimensions(report)
-    score = sum(points for _, points, _, _ in dimensions)
-    total = sum(max_points for _, _, max_points, _ in dimensions)
+    scorecard = _scorecard_dict(report)
     repo = report.repository
 
     lines = [
@@ -226,12 +238,15 @@ def maintenance_scorecard(report: MaintainerReport) -> str:
         "",
         f"Generated: {report.generated_at.isoformat()}",
         "",
-        f"Score: {score}/{total}",
+        f"Score: {scorecard['score']}/{scorecard['total']}",
         "",
         "## Dimensions",
         "",
     ]
-    lines.extend(f"- {name}: {points}/{max_points} - {detail}" for name, points, max_points, detail in dimensions)
+    lines.extend(
+        f"- {item['name']}: {item['points']}/{item['max_points']} - {item['detail']}"
+        for item in scorecard["dimensions"]
+    )
 
     lines.extend(["", "## Notes", ""])
     if report.risks:
@@ -485,6 +500,24 @@ def _score_dimensions(report: MaintainerReport) -> list[tuple[str, int, int, str
             "No obvious risks were detected." if not report.risks else f"{len(report.risks)} risk item(s) need review.",
         ),
     ]
+
+
+def _scorecard_dict(report: MaintainerReport) -> dict:
+    dimensions = _score_dimensions(report)
+    return {
+        "score": sum(points for _, points, _, _ in dimensions),
+        "total": sum(max_points for _, _, max_points, _ in dimensions),
+        "risk_count": len(report.risks),
+        "dimensions": [
+            {
+                "name": name,
+                "points": points,
+                "max_points": max_points,
+                "detail": detail,
+            }
+            for name, points, max_points, detail in dimensions
+        ],
+    }
 
 
 def _immediate_actions(report: MaintainerReport) -> list[str]:

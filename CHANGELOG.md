@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.4.0 - 2026-06-01
+
+- Added a JSON Schema for machine-readable maintainer reports.
+- Added scorecard data to JSON report output.
+- Added machine-readable JSON report generation to the reusable GitHub Action.
+- Documented the schema for downstream automation users.
+
 ## 0.3.0 - 2026-06-01
 
 - Added a reusable composite GitHub Action for scheduled maintainer reports.

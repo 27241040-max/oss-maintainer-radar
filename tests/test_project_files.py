@@ -14,7 +14,9 @@ class ProjectFileTests(unittest.TestCase):
         self.assertIn("using: composite", text)
         self.assertIn("target_repo:", text)
         self.assertIn("github_token:", text)
+        self.assertIn("report_json_path:", text)
         self.assertIn("oss-radar audit", text)
+        self.assertIn("--format json", text)
         self.assertIn("oss-radar scorecard", text)
         self.assertIn("oss-radar action-plan", text)
         self.assertIn("oss-radar codex-prompts", text)
@@ -30,8 +32,9 @@ class ProjectFileTests(unittest.TestCase):
     def test_readme_documents_reusable_action(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("27241040-max/oss-maintainer-radar@v0.3.0", text)
+        self.assertIn("27241040-max/oss-maintainer-radar@v0.4.0", text)
         self.assertIn("docs/action-usage.md", text)
+        self.assertIn("schemas/maintainer-report.schema.json", text)
 
 
 if __name__ == "__main__":

@@ -28,6 +28,9 @@ outputs:
   report_path:
     description: Path to the generated maintainer report.
     value: ${{ steps.paths.outputs.report_path }}
+  report_json_path:
+    description: Path to the generated machine-readable JSON report.
+    value: ${{ steps.paths.outputs.report_json_path }}
   scorecard_path:
     description: Path to the generated maintenance scorecard.
     value: ${{ steps.paths.outputs.scorecard_path }}
@@ -49,6 +52,7 @@ runs:
         output_dir="${{ inputs.output_dir }}"
         mkdir -p "$output_dir"
         echo "report_path=$output_dir/maintainer-radar.md" >> "$GITHUB_OUTPUT"
+        echo "report_json_path=$output_dir/maintainer-radar.json" >> "$GITHUB_OUTPUT"
         echo "scorecard_path=$output_dir/scorecard.md" >> "$GITHUB_OUTPUT"
         echo "action_plan_path=$output_dir/action-plan.md" >> "$GITHUB_OUTPUT"
         echo "prompts_path=$output_dir/codex-prompts.md" >> "$GITHUB_OUTPUT"
@@ -72,6 +76,11 @@ runs:
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
           --output "${{ steps.paths.outputs.report_path }}"
+        oss-radar audit \
+          --repo "$target_repo" \
+          --stale-days "${{ inputs.stale_days }}" \
+          --format json \
+          --output "${{ steps.paths.outputs.report_json_path }}"
         oss-radar scorecard \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \

@@ -10,6 +10,7 @@ It can:
 - run every Monday
 - run manually with a `target_repo` input
 - generate a maintainer report
+- generate a machine-readable JSON report
 - generate a scorecard and action plan
 - generate Codex prompts for triage, review, and release readiness
 - upload the generated files as a workflow artifact
@@ -17,7 +18,9 @@ It can:
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
 print the token or commit generated reports back to the repository.
 
-See [action-usage.md](action-usage.md) for the reusable Action interface.
+See [action-usage.md](action-usage.md) for the reusable Action interface and
+[../schemas/maintainer-report.schema.json](../schemas/maintainer-report.schema.json)
+for the JSON report schema.
 
 ## Manual Run
 
