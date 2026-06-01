@@ -491,6 +491,24 @@ class CliTests(unittest.TestCase):
             self.assertIn(f"PASS {report}", text)
             self.assertIn("schemas/maintainer-report.schema.json", text)
 
+    def test_validate_report_accepts_named_trend_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            trend = Path(tmp) / "trend.json"
+            summary = Path(tmp) / "validation.txt"
+            _write_report(first, open_issues=2, stale_issues=0, review_backlog=0, releases=1, risks=1, score=70)
+            _write_report(latest, open_issues=1, stale_issues=0, review_backlog=0, releases=2, risks=0, score=85)
+            trend_status = main(["trend", str(first), str(latest), "--format", "json", "--output", str(trend)])
+
+            validation_status = main(["validate-report", str(trend), "--schema", "trend", "--output", str(summary)])
+
+            self.assertEqual(trend_status, 0)
+            self.assertEqual(validation_status, 0)
+            text = summary.read_text(encoding="utf-8")
+            self.assertIn(f"PASS {trend}", text)
+            self.assertIn("schemas/trend-report.schema.json", text)
+
     def test_validate_report_fails_invalid_json_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             report = Path(tmp) / "report.json"

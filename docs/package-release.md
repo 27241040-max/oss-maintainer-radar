@@ -22,11 +22,11 @@ python scripts/verify.py
 
 Expected artifacts:
 
-- `dist/oss_maintainer_radar-0.1.0.tar.gz`
-- `dist/oss_maintainer_radar-0.1.0-py3-none-any.whl`
+- `dist/oss_maintainer_radar-0.13.0.tar.gz`
+- `dist/oss_maintainer_radar-0.13.0-py3-none-any.whl`
 
-The source distribution includes docs, examples, tests, and project policy files
-through `MANIFEST.in`.
+The source distribution includes docs, examples, schemas, tests, and project
+policy files through `MANIFEST.in`.
 It also includes `examples/applicant.example.json` as a safe template; real
 `applicant.json` files are intentionally ignored by Git.
 
@@ -34,7 +34,7 @@ It also includes `examples/applicant.example.json` as a safe template; real
 
 ```bash
 python3 -m venv /tmp/oss-radar-wheel-check
-/tmp/oss-radar-wheel-check/bin/python -m pip install dist/oss_maintainer_radar-0.1.0-py3-none-any.whl
+/tmp/oss-radar-wheel-check/bin/python -m pip install dist/oss_maintainer_radar-0.13.0-py3-none-any.whl
 /tmp/oss-radar-wheel-check/bin/oss-radar --help
 ```
 

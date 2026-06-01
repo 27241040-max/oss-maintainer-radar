@@ -20,6 +20,7 @@ def main() -> int:
         ("evidence JSON", [sys.executable, "-m", "json.tool", "examples/evidence.json"], subprocess.DEVNULL),
         ("applicant JSON", [sys.executable, "-m", "json.tool", "examples/applicant.example.json"], subprocess.DEVNULL),
         ("report schema JSON", [sys.executable, "-m", "json.tool", "schemas/maintainer-report.schema.json"], subprocess.DEVNULL),
+        ("trend schema JSON", [sys.executable, "-m", "json.tool", "schemas/trend-report.schema.json"], subprocess.DEVNULL),
         (
             "fixture audit",
             [
@@ -93,6 +94,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(prefix="oss-radar-report-") as report_tmp:
         report = Path(report_tmp) / "maintainer-radar.json"
+        trend_json = Path(report_tmp) / "trend-summary.json"
         run(
             "write fixture JSON report",
             [
@@ -138,7 +140,7 @@ def main() -> int:
             pythonpath=True,
         )
         run(
-            "trend JSON",
+            "write trend JSON",
             [
                 sys.executable,
                 "-m",
@@ -148,6 +150,22 @@ def main() -> int:
                 str(report),
                 "--format",
                 "json",
+                "--output",
+                str(trend_json),
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
+        run(
+            "validate trend JSON",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "validate-report",
+                str(trend_json),
+                "--schema",
+                "trend",
             ],
             stdout=subprocess.DEVNULL,
             pythonpath=True,
@@ -241,6 +259,28 @@ def main() -> int:
             stdout=subprocess.DEVNULL,
             cwd=tmp_path,
         )
+        wheel_trend = tmp_path / "wheel-trend.json"
+        run(
+            "wheel CLI write trend JSON",
+            [
+                str(wheel_cli),
+                "trend",
+                str(wheel_report),
+                str(wheel_report),
+                "--format",
+                "json",
+                "--output",
+                str(wheel_trend),
+            ],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
+        run(
+            "wheel CLI validate trend JSON",
+            [str(wheel_cli), "validate-report", str(wheel_trend), "--schema", "trend"],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
 
     print("verify: all checks passed")
     return 0
@@ -276,7 +316,9 @@ def inspect_sdist(source: Path) -> None:
         "docs/package-release.md",
         "examples/evidence.json",
         "schemas/maintainer-report.schema.json",
+        "schemas/trend-report.schema.json",
         "src/oss_maintainer_radar/schemas/maintainer-report.schema.json",
+        "src/oss_maintainer_radar/schemas/trend-report.schema.json",
         "action.yml",
         "examples/applicant.example.json",
         "tests/test_cli.py",

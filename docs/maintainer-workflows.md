@@ -89,6 +89,7 @@ oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --output reports/trend.md
 oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
 oss-radar trend reports/week-1.json reports/week-2.json --format json --output reports/trend.json
+oss-radar validate-report reports/trend.json --schema trend
 ```
 
 Use trend reports to:
@@ -98,5 +99,6 @@ Use trend reports to:
 - review changes in open issues, stale issues, review backlog, releases, risks, and scorecard score
 - save CSV rows for spreadsheet or dashboard review without parsing Markdown
 - save JSON rows for dashboards without parsing CSV
+- validate trend JSON against `schemas/trend-report.schema.json` before dashboard ingestion
 - treat repository or schema mismatch warnings as prompts to review inputs
 - avoid turning trend deltas into adoption or ecosystem-importance claims

@@ -77,6 +77,7 @@ oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
 oss-radar trend reports/week-1.json reports/week-2.json --format json --output reports/trend.json
+oss-radar validate-report reports/trend.json --schema trend
 ```
 
 Create a combined submission pack:
@@ -147,7 +148,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.12.0
+- uses: 27241040-max/oss-maintainer-radar@v0.13.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -208,6 +209,8 @@ See [docs/scheduled-maintainer-workflow.md](docs/scheduled-maintainer-workflow.m
 for an end-to-end weekly workflow using scheduled report artifacts.
 See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.json)
 for the machine-readable report schema. The current schema version is `1.2`.
+See [schemas/trend-report.schema.json](schemas/trend-report.schema.json) for
+the JSON trend output schema used by dashboard integrations.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for

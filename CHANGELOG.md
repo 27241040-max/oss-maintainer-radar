@@ -2,6 +2,14 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.13.0 - 2026-06-01
+
+- Added `schemas/trend-report.schema.json` for `oss-radar trend --format json` output.
+- Added named schema validation with `oss-radar validate-report trend.json --schema trend`.
+- Added schema coverage for trend warnings, metric rows, integer deltas, and direction values.
+- Included the trend schema in source distributions and wheels.
+- Documented trend JSON validation before dashboard ingestion.
+
 ## 0.12.0 - 2026-06-01
 
 - Added `oss-radar trend --format json` for dashboard-friendly trend output.

@@ -20,6 +20,7 @@ It can:
 - provide JSON artifacts that can be compared later with `oss-radar trend`
 - provide CSV trend rows for spreadsheet or dashboard review
 - provide JSON trend rows for dashboard integrations
+- provide a trend JSON schema for validating integration inputs
 - warn when trend inputs mix repositories or schema versions
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
@@ -29,7 +30,8 @@ See [action-usage.md](action-usage.md) for the reusable Action interface,
 [scheduled-maintainer-workflow.md](scheduled-maintainer-workflow.md) for an
 end-to-end maintainer loop, and
 [../schemas/maintainer-report.schema.json](../schemas/maintainer-report.schema.json)
-for the JSON report schema.
+for the JSON report schema. Trend JSON integrations can validate against
+[../schemas/trend-report.schema.json](../schemas/trend-report.schema.json).
 
 ## Manual Run
 

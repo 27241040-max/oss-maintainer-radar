@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oss-maintainer-radar"
-version = "0.12.0"
+version = "0.13.0"
 description = "Evidence-based GitHub maintenance reports and Codex workflow prompts for open-source maintainers."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,6 +27,11 @@ classifiers = [
   "Topic :: Software Development :: Version Control :: Git",
 ]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/27241040-max/oss-maintainer-radar"
+Issues = "https://github.com/27241040-max/oss-maintainer-radar/issues"
+Changelog = "https://github.com/27241040-max/oss-maintainer-radar/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

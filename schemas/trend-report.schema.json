@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/27241040-max/oss-maintainer-radar/schemas/trend-report.schema.json",
+  "title": "OSS Maintainer Radar Trend Report",
+  "type": "object",
+  "required": [
+    "repository",
+    "reports_compared",
+    "first_snapshot",
+    "latest_snapshot",
+    "warnings",
+    "metrics",
+    "boundaries"
+  ],
+  "properties": {
+    "repository": {
+      "type": "string"
+    },
+    "reports_compared": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "first_snapshot": {
+      "type": "string"
+    },
+    "latest_snapshot": {
+      "type": "string"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    },
+    "boundaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "required": [
+        "metric_name",
+        "first_value",
+        "latest_value",
+        "delta",
+        "direction"
+      ],
+      "properties": {
+        "metric_name": {
+          "type": "string",
+          "enum": [
+            "Open issues",
+            "Stale issues",
+            "Review backlog",
+            "Release count",
+            "Risk count",
+            "Scorecard score"
+          ]
+        },
+        "first_value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "latest_value": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "delta": {
+          "type": "integer"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "improved",
+            "unchanged",
+            "worsened"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -6,6 +6,12 @@ from typing import Any
 
 
 DEFAULT_SCHEMA = Path("schemas") / "maintainer-report.schema.json"
+TREND_SCHEMA = Path("schemas") / "trend-report.schema.json"
+NAMED_SCHEMAS = {
+    "maintainer": DEFAULT_SCHEMA,
+    "report": DEFAULT_SCHEMA,
+    "trend": TREND_SCHEMA,
+}
 
 
 class SchemaValidationError(ValueError):
@@ -13,7 +19,8 @@ class SchemaValidationError(ValueError):
 
 
 def validate_reports(report_paths: list[Path], schema_path: Path | None = None) -> tuple[str, bool]:
-    schema = load_report_schema(schema_path)
+    resolved_schema_path = resolve_schema_path(schema_path)
+    schema = load_report_schema(resolved_schema_path)
     lines: list[str] = []
     ok = True
 
@@ -25,14 +32,25 @@ def validate_reports(report_paths: list[Path], schema_path: Path | None = None) 
             ok = False
             lines.append(f"FAIL {report_path}: {exc}")
         else:
-            lines.append(f"PASS {report_path}: matches {DEFAULT_SCHEMA.as_posix()}")
+            lines.append(f"PASS {report_path}: matches {resolved_schema_path.as_posix()}")
 
     return "\n".join(lines) + "\n", ok
 
 
 def load_report_schema(schema_path: Path | None = None) -> dict[str, Any]:
-    path = schema_path or _find_default_schema()
+    path = resolve_schema_path(schema_path)
     return _load_json(path)
+
+
+def resolve_schema_path(schema_path: Path | None = None) -> Path:
+    if schema_path is None:
+        return _find_schema(DEFAULT_SCHEMA)
+
+    schema_name = schema_path.as_posix()
+    if schema_name in NAMED_SCHEMAS:
+        return _find_schema(NAMED_SCHEMAS[schema_name])
+
+    return schema_path
 
 
 def validate_schema(schema: dict[str, Any], value: Any, root: dict[str, Any], path: str = "$") -> None:
@@ -52,6 +70,10 @@ def validate_schema(schema: dict[str, Any], value: Any, root: dict[str, Any], pa
 
     if "const" in schema and value != schema["const"]:
         raise SchemaValidationError(f"{path} expected {schema['const']!r}, got {value!r}")
+
+    if "enum" in schema and value not in schema["enum"]:
+        allowed = ", ".join(repr(item) for item in schema["enum"])
+        raise SchemaValidationError(f"{path} expected one of {allowed}, got {value!r}")
 
     expected_type = schema.get("type")
     if expected_type is not None and not _json_type_matches(value, expected_type):
@@ -76,29 +98,32 @@ def validate_schema(schema: dict[str, Any], value: Any, root: dict[str, Any], pa
             elif not schema.get("additionalProperties", True):
                 raise SchemaValidationError(f"{child_path} is not allowed")
 
-    if isinstance(value, list) and "items" in schema:
-        for index, item in enumerate(value):
-            validate_schema(schema["items"], item, root, f"{path}[{index}]")
+    if isinstance(value, list):
+        if "minItems" in schema and len(value) < schema["minItems"]:
+            raise SchemaValidationError(f"{path} expected at least {schema['minItems']} items, got {len(value)}")
+        if "items" in schema:
+            for index, item in enumerate(value):
+                validate_schema(schema["items"], item, root, f"{path}[{index}]")
 
 
-def _find_default_schema() -> Path:
-    package_candidate = Path(__file__).resolve().parent / DEFAULT_SCHEMA
+def _find_schema(relative_schema: Path) -> Path:
+    package_candidate = Path(__file__).resolve().parent / relative_schema
     if package_candidate.is_file():
         return package_candidate
 
     start = Path.cwd().resolve()
     for directory in (start, *start.parents):
-        candidate = directory / DEFAULT_SCHEMA
+        candidate = directory / relative_schema
         if candidate.is_file():
             return candidate
 
     package_root = Path(__file__).resolve().parents[2]
-    candidate = package_root / DEFAULT_SCHEMA
+    candidate = package_root / relative_schema
     if candidate.is_file():
         return candidate
 
     raise FileNotFoundError(
-        f"could not find {DEFAULT_SCHEMA.as_posix()}; run from a project checkout or pass --schema"
+        f"could not find {relative_schema.as_posix()}; run from a project checkout or pass --schema"
     )
 
 

@@ -15,13 +15,14 @@ inflated claims.
   fails.
 - Scheduled maintainer workflow documentation for weekly triage and release
   preparation.
+- Trend reports across saved snapshots, including Markdown, CSV, and JSON.
+- Schema validation for maintainer report JSON and trend JSON outputs.
 
 ## Near Term
 
-- Add richer release-note grouping from merged pull requests.
-- Add label normalization for common bug, security, docs, and release labels.
-- Add trend reports across saved snapshots.
-- Add optional schema validation command for generated JSON reports.
+- Add richer dashboard examples for trend JSON consumers.
+- Add an optional trend JSON schema compatibility note for future schema
+  versions.
 
 ## Later
 

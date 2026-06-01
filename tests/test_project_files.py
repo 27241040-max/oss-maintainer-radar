@@ -34,10 +34,11 @@ class ProjectFileTests(unittest.TestCase):
     def test_readme_documents_reusable_action(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("27241040-max/oss-maintainer-radar@v0.12.0", text)
+        self.assertIn("27241040-max/oss-maintainer-radar@v0.13.0", text)
         self.assertIn("docs/action-usage.md", text)
         self.assertIn("docs/scheduled-maintainer-workflow.md", text)
         self.assertIn("schemas/maintainer-report.schema.json", text)
+        self.assertIn("schemas/trend-report.schema.json", text)
 
     def test_scheduled_workflow_doc_covers_issue_acceptance_criteria(self) -> None:
         text = (ROOT / "docs" / "scheduled-maintainer-workflow.md").read_text(encoding="utf-8")

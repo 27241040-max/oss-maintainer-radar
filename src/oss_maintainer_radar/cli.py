@@ -129,12 +129,12 @@ def build_parser() -> argparse.ArgumentParser:
     trend.add_argument("--format", choices=["markdown", "csv", "json"], default="markdown")
     trend.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
-    validate = subparsers.add_parser("validate-report", help="Validate JSON reports against the report schema.")
-    validate.add_argument("reports", nargs="+", type=Path, help="Saved JSON reports from `oss-radar audit --format json`.")
+    validate = subparsers.add_parser("validate-report", help="Validate JSON files against a supported schema.")
+    validate.add_argument("reports", nargs="+", type=Path, help="JSON files to validate.")
     validate.add_argument(
         "--schema",
         type=Path,
-        help="Schema path; defaults to the packaged maintainer report schema.",
+        help="Schema path or named schema (`maintainer`, `trend`); defaults to `maintainer`.",
     )
     validate.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
