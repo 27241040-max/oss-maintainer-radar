@@ -135,6 +135,7 @@ a field-by-field checklist.
 See [docs/submission-pack.md](docs/submission-pack.md) for a submission prep
 template and [docs/github-actions.md](docs/github-actions.md) for a scheduled
 maintainer automation example.
+See [docs/package-release.md](docs/package-release.md) for package build checks.
 
 ## Maintainer Automation Ideas
 
@@ -156,6 +157,13 @@ Run tests:
 
 ```bash
 python -m unittest discover -s tests
+```
+
+Build distribution artifacts:
+
+```bash
+python -m pip install -e ".[dev]"
+python -m build
 ```
 
 Run the CLI without installing:
