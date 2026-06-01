@@ -109,12 +109,14 @@ def form_field_values(
 ) -> dict[str, str]:
     applicant = applicant or ApplicantProfile()
     evidence_clauses = _application_evidence_clauses(report)
+    release_clauses = _application_release_clauses(report)
     qualifies = _fit_500(
         " ".join(
             [
                 f"I am a {role} maintainer of {report.repository.full_name}.",
                 f"The repo has {report.repository.stars} stars and {report.repository.forks} forks.",
                 *evidence_clauses,
+                *release_clauses,
                 f"Current maintenance surface includes {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')} in the sampled data.",
                 "The project benefits from evidence-based triage, review, release management, and quality work.",
             ]
@@ -212,6 +214,56 @@ def codex_prompts(report: MaintainerReport) -> str:
     )
 
 
+def maintenance_scorecard(report: MaintainerReport) -> str:
+    dimensions = _score_dimensions(report)
+    score = sum(points for _, points, _, _ in dimensions)
+    total = sum(max_points for _, _, max_points, _ in dimensions)
+    repo = report.repository
+
+    lines = [
+        f"# Maintenance Scorecard: {repo.full_name}",
+        "",
+        f"Generated: {report.generated_at.isoformat()}",
+        "",
+        f"Score: {score}/{total}",
+        "",
+        "## Dimensions",
+        "",
+    ]
+    lines.extend(f"- {name}: {points}/{max_points} - {detail}" for name, points, max_points, detail in dimensions)
+
+    lines.extend(["", "## Notes", ""])
+    if report.risks:
+        lines.extend(f"- {risk}" for risk in report.risks)
+    else:
+        lines.append("- No obvious maintenance risk was detected in the sampled data.")
+
+    return "\n".join(lines) + "\n"
+
+
+def action_plan(report: MaintainerReport) -> str:
+    repo = report.repository
+    immediate = _immediate_actions(report)
+    weekly = _weekly_actions(report)
+    evidence = _evidence_actions(report)
+
+    lines = [
+        f"# Maintainer Action Plan: {repo.full_name}",
+        "",
+        f"Generated: {report.generated_at.isoformat()}",
+        "",
+        "## Immediate",
+        "",
+    ]
+    lines.extend(immediate)
+    lines.extend(["", "## This Week", ""])
+    lines.extend(weekly)
+    lines.extend(["", "## Evidence To Keep Current", ""])
+    lines.extend(evidence)
+
+    return "\n".join(lines) + "\n"
+
+
 def submission_pack(
     report: MaintainerReport,
     *,
@@ -246,6 +298,14 @@ def submission_pack(
         "## Evidence Report",
         "",
         report_to_markdown(report).strip(),
+        "",
+        "## Maintenance Scorecard",
+        "",
+        maintenance_scorecard(report).strip(),
+        "",
+        "## Maintainer Action Plan",
+        "",
+        action_plan(report).strip(),
         "",
         "## Codex Workflow Prompts",
         "",
@@ -372,6 +432,98 @@ def _application_evidence_clauses(report: MaintainerReport) -> list[str]:
     if evidence.ecosystem_importance:
         clauses.append(evidence.ecosystem_importance)
     return clauses
+
+
+def _application_release_clauses(report: MaintainerReport) -> list[str]:
+    if not report.latest_release:
+        return []
+    return [f"Latest release is {report.latest_release.tag_name}."]
+
+
+def _score_dimensions(report: MaintainerReport) -> list[tuple[str, int, int, str]]:
+    repo = report.repository
+    adoption = repo.stars >= 10 or repo.forks >= 3 or report.evidence.has_adoption_signal()
+    has_workload = report.open_issue_count > 0 or report.open_pull_request_count > 0
+    risk_penalty = min(20, len(report.risks) * 5)
+
+    return [
+        (
+            "Repository availability",
+            20 if repo.url.startswith("https://github.com/") and not repo.archived else 0,
+            20,
+            "Public GitHub repository is active."
+            if repo.url.startswith("https://github.com/") and not repo.archived
+            else "Repository should be public on GitHub and not archived.",
+        ),
+        (
+            "Adoption signal",
+            20 if adoption else 0,
+            20,
+            _adoption_success(report) if adoption else "Public adoption evidence is still weak.",
+        ),
+        (
+            "Maintenance surface",
+            20 if has_workload else 0,
+            20,
+            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')}."
+            if has_workload
+            else "No open issue or pull request surface was found in the sample.",
+        ),
+        (
+            "Release practice",
+            20 if report.latest_release else 0,
+            20,
+            f"Latest release is {report.latest_release.tag_name}."
+            if report.latest_release
+            else "No public release was found in the sample.",
+        ),
+        (
+            "Risk posture",
+            max(0, 20 - risk_penalty),
+            20,
+            "No obvious risks were detected." if not report.risks else f"{len(report.risks)} risk item(s) need review.",
+        ),
+    ]
+
+
+def _immediate_actions(report: MaintainerReport) -> list[str]:
+    actions: list[str] = []
+    repo = report.repository
+    if not repo.url.startswith("https://github.com/"):
+        actions.append("- Publish the repository on GitHub before using public maintainer evidence.")
+    if repo.archived:
+        actions.append("- Unarchive the repository or choose an active project.")
+    if not report.latest_release:
+        actions.append("- Publish a first release with installation notes and changelog entries.")
+    if report.stale_pull_request_count:
+        actions.append(f"- Review {_count(report.stale_pull_request_count, 'pull request')} waiting for attention.")
+    if report.stale_issue_count:
+        actions.append(f"- Triage {_count(report.stale_issue_count, 'stale issue')} and record the next maintainer action.")
+    if not actions:
+        actions.append("- No urgent repository hygiene action was found in this sample.")
+    return actions
+
+
+def _weekly_actions(report: MaintainerReport) -> list[str]:
+    actions = [
+        f"- Review the current sample of {_count(report.open_pull_request_count, 'open pull request')}.",
+        f"- Triage the current sample of {_count(report.open_issue_count, 'open issue')}.",
+        "- Keep release notes tied to merged changes and public tags.",
+    ]
+    if report.label_counts:
+        top_labels = ", ".join(list(report.label_counts)[:5])
+        actions.append(f"- Watch high-volume labels: {top_labels}.")
+    return actions
+
+
+def _evidence_actions(report: MaintainerReport) -> list[str]:
+    actions = [
+        "- Keep stars, forks, releases, issues, and pull requests publicly visible.",
+        "- Add external usage evidence only when it has a source URL.",
+    ]
+    if report.repository.stars < 10 and report.repository.forks < 3 and not report.evidence.has_adoption_signal():
+        actions.append("- Collect real adoption evidence before making ecosystem-impact claims.")
+    return actions
 
 
 def _adoption_success(report: MaintainerReport) -> str:

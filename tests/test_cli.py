@@ -85,6 +85,8 @@ class CliTests(unittest.TestCase):
             self.assertIn("Application Draft", text)
             self.assertIn("Form Fields", text)
             self.assertIn("Evidence Report", text)
+            self.assertIn("Maintenance Scorecard", text)
+            self.assertIn("Maintainer Action Plan", text)
             self.assertIn("Codex Workflow Prompts", text)
 
     def test_form_fields_include_character_counts(self) -> None:
@@ -106,8 +108,47 @@ class CliTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
             self.assertIn("Codex for Open Source Form Fields", text)
             self.assertIn("## Public GitHub repository URL", text)
+            self.assertIn("Latest release is v0.1.0.", text)
             self.assertIn("Character count:", text)
             self.assertIn("<fill manually>", text)
+
+    def test_scorecard_reports_maintenance_dimensions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "scorecard.md"
+            status = main(
+                [
+                    "scorecard",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("# Maintenance Scorecard", text)
+            self.assertIn("Score:", text)
+            self.assertIn("Release practice", text)
+
+    def test_action_plan_reports_prioritized_work(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "action-plan.md"
+            status = main(
+                [
+                    "action-plan",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("# Maintainer Action Plan", text)
+            self.assertIn("## Immediate", text)
+            self.assertIn("## Evidence To Keep Current", text)
 
     def test_form_fields_can_use_applicant_profile(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

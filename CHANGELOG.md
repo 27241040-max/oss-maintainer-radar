@@ -2,6 +2,14 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.2.0 - 2026-06-01
+
+- Added maintenance health scorecards for public repository checks.
+- Added prioritized maintainer action plans for hygiene, weekly work, and evidence tracking.
+- Added scorecard and action-plan sections to combined submission packs.
+- Refocused README and maintainer workflow docs on the project as a general OSS maintenance tool.
+- Included latest release evidence in conservative form-field drafts when available.
+
 ## 0.1.0 - 2026-06-01
 
 - Added a dependency-free Python CLI for GitHub maintainer reports.

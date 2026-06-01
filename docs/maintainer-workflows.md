@@ -16,6 +16,30 @@ Use the report to:
 - decide which PRs need reviewer attention
 - keep public maintenance notes grounded in repository evidence
 
+## Health Scorecard
+
+```bash
+oss-radar scorecard --repo owner/repo --output reports/scorecard.md
+```
+
+Use the scorecard to:
+
+- spot weak areas before a release
+- compare public adoption, review surface, and release practice
+- keep risk notes separate from roadmap ambitions
+
+## Maintainer Action Plan
+
+```bash
+oss-radar action-plan --repo owner/repo --output reports/action-plan.md
+```
+
+Use the action plan to:
+
+- identify urgent hygiene work
+- convert stale review and triage signals into a weekly checklist
+- keep evidence collection honest and source-backed
+
 ## Pull Request Review Prep
 
 ```bash
@@ -41,4 +65,3 @@ Before publishing:
 - check stale PRs that may contain release blockers
 - review recent completed PRs for changelog entries
 - keep release notes separate from unverifiable marketing claims
-

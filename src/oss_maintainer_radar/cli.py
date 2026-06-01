@@ -7,9 +7,11 @@ from pathlib import Path
 from .analyzer import analyze_snapshot
 from .github import fetch_snapshot, load_applicant, load_evidence, load_snapshot
 from .render import (
+    action_plan,
     application_draft,
     codex_prompts,
     form_fields,
+    maintenance_scorecard,
     readiness_check,
     report_to_json,
     report_to_markdown,
@@ -28,6 +30,10 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "audit":
             output = report_to_json(report) if args.format == "json" else report_to_markdown(report)
+        elif args.command == "scorecard":
+            output = maintenance_scorecard(report)
+        elif args.command == "action-plan":
+            output = action_plan(report)
         elif args.command == "application":
             output = application_draft(report, role=args.role, applicant=applicant)
         elif args.command == "codex-prompts":
@@ -59,6 +65,16 @@ def build_parser() -> argparse.ArgumentParser:
     audit = _add_snapshot_args(subparsers.add_parser("audit", help="Generate a maintenance report."))
     audit.add_argument("--format", choices=["markdown", "json"], default="markdown")
     audit.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    scorecard = _add_snapshot_args(
+        subparsers.add_parser("scorecard", help="Generate a maintenance health scorecard.")
+    )
+    scorecard.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    plan = _add_snapshot_args(
+        subparsers.add_parser("action-plan", help="Generate a prioritized maintainer action plan.")
+    )
+    plan.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     application = _add_snapshot_args(
         subparsers.add_parser("application", help="Draft truthful Codex for OSS application fields.")

@@ -8,10 +8,13 @@ It reads GitHub repository data from a public repo or a saved JSON snapshot,
 then produces:
 
 - a maintainer workload report
+- a maintenance health scorecard
+- a prioritized maintainer action plan
 - stale issue and pull request signals
 - release-readiness notes
-- a truthful Codex for Open Source application draft with 500-character fields
 - Codex task prompts maintainers can paste into their normal review workflow
+- optional Codex for Open Source form-field drafts for projects that already
+  have truthful public evidence
 
 The project intentionally avoids fabricating adoption claims. If a repository
 does not yet have meaningful usage, the report says so.
@@ -42,10 +45,16 @@ Run against the included fixture:
 oss-radar audit --fixture examples/sample_github_payload.json
 ```
 
-Generate an application draft:
+Generate a maintenance scorecard:
 
 ```bash
-oss-radar application --fixture examples/sample_github_payload.json --role primary
+oss-radar scorecard --fixture examples/sample_github_payload.json
+```
+
+Generate a prioritized action plan:
+
+```bash
+oss-radar action-plan --fixture examples/sample_github_payload.json
 ```
 
 Generate Codex prompts for maintainer workflows:
@@ -127,7 +136,8 @@ The Codex for Open Source program is for maintainers of active public
 open-source projects. A brand-new repository may be useful, but it may not show
 the usage or ecosystem importance reviewers look for yet.
 
-Use this tool to prepare an accurate application:
+This project is a maintainer operations tool first. Its application helpers are
+only an appendix for accurate form filling:
 
 1. Run `oss-radar audit` on the repository you actually maintain.
 2. Check whether the evidence supports your claims.
