@@ -14,6 +14,7 @@ then produces:
 - release-readiness notes
 - deterministic release-note groups from completed pull request labels and titles
 - normalized common maintainer labels while preserving original label text
+- local JSON report validation against the published report schema
 - Codex task prompts maintainers can paste into their normal review workflow
 - optional Codex for Open Source form-field drafts for projects that already
   have truthful public evidence
@@ -70,6 +71,7 @@ Compare saved JSON reports over time:
 ```bash
 oss-radar audit --repo owner/repo --format json --output reports/week-1.json
 oss-radar audit --repo owner/repo --format json --output reports/week-2.json
+oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json
 ```
 
@@ -141,7 +143,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.8.0
+- uses: 27241040-max/oss-maintainer-radar@v0.9.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -162,6 +164,12 @@ JSON is available for automation:
 
 ```bash
 oss-radar audit --fixture examples/sample_github_payload.json --format json
+```
+
+Validate saved JSON before trend analysis or downstream automation:
+
+```bash
+oss-radar validate-report reports/maintainer-radar.json
 ```
 
 ## Codex for Open Source Notes
@@ -213,6 +221,7 @@ help with:
 - release-note drafting
 - deterministic release-note grouping
 - trend reports across saved JSON snapshots
+- schema validation for downloaded workflow artifacts
 - regression-risk checklists
 - security-review routing
 

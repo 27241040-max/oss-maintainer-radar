@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oss-maintainer-radar"
-version = "0.8.0"
+version = "0.9.0"
 description = "Evidence-based GitHub maintenance reports and Codex workflow prompts for open-source maintainers."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -38,3 +38,6 @@ oss-radar = "oss_maintainer_radar.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+oss_maintainer_radar = ["schemas/*.json"]

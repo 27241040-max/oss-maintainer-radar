@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.8.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.9.0
         with:
           target_repo: ${{ inputs.target_repo || github.repository }}
           stale_days: ${{ inputs.stale_days || '30' }}
@@ -97,14 +97,19 @@ Keep downloaded JSON reports in dated folders:
 gh run download RUN_ID --repo owner/repo --name maintainer-radar-report --dir reports/2026-06-01
 gh run download NEXT_RUN_ID --repo owner/repo --name maintainer-radar-report --dir reports/2026-06-08
 
+oss-radar validate-report \
+  reports/2026-06-01/maintainer-radar-report/maintainer-radar.json \
+  reports/2026-06-08/maintainer-radar-report/maintainer-radar.json
+
 oss-radar trend \
   reports/2026-06-01/maintainer-radar-report/maintainer-radar.json \
   reports/2026-06-08/maintainer-radar-report/maintainer-radar.json
 ```
 
-Use trend reports to compare open issues, stale issues, review backlog, release
-count, risk count, and scorecard score. Treat every change as a prompt for
-maintainer review, not as an automated project-health prediction.
+Validate downloaded JSON artifacts before trend analysis. Use trend reports to
+compare open issues, stale issues, review backlog, release count, risk count,
+and scorecard score. Treat every change as a prompt for maintainer review, not
+as an automated project-health prediction.
 
 ## Weekly Triage Loop
 

@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.9.0 - 2026-06-01
+
+- Added a `validate-report` command for checking generated JSON reports against `schemas/maintainer-report.schema.json`.
+- Promoted the dependency-free JSON Schema subset validator from tests into reusable CLI code.
+- Added pass/fail validation summaries for local report files.
+- Documented validating downloaded workflow artifacts before using trend reports.
+
 ## 0.8.0 - 2026-06-01
 
 - Added a `trend` command for comparing two or more saved JSON reports.

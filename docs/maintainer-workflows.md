@@ -85,11 +85,13 @@ Use release-window filters to:
 ```bash
 oss-radar audit --repo owner/repo --format json --output reports/week-1.json
 oss-radar audit --repo owner/repo --format json --output reports/week-2.json
+oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --output reports/trend.md
 ```
 
 Use trend reports to:
 
+- validate saved reports before comparing them
 - compare saved reports from the same repository
 - review changes in open issues, stale issues, review backlog, releases, risks, and scorecard score
 - avoid turning trend deltas into adoption or ecosystem-importance claims

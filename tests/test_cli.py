@@ -280,6 +280,58 @@ class CliTests(unittest.TestCase):
             self.assertIn("Risk count: 0 -> 2 (+2, worsened)", text)
             self.assertIn("Scorecard score: 90 -> 65 (-25, worsened)", text)
 
+    def test_validate_report_passes_generated_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.json"
+            summary = Path(tmp) / "validation.txt"
+            audit_status = main(
+                [
+                    "audit",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--format",
+                    "json",
+                    "--output",
+                    str(report),
+                ]
+            )
+
+            status = main(["validate-report", str(report), "--output", str(summary)])
+
+            self.assertEqual(audit_status, 0)
+            self.assertEqual(status, 0)
+            text = summary.read_text(encoding="utf-8")
+            self.assertIn(f"PASS {report}", text)
+            self.assertIn("schemas/maintainer-report.schema.json", text)
+
+    def test_validate_report_fails_invalid_json_report(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            report = Path(tmp) / "report.json"
+            invalid = Path(tmp) / "invalid.json"
+            summary = Path(tmp) / "validation.txt"
+            status = main(
+                [
+                    "audit",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--format",
+                    "json",
+                    "--output",
+                    str(report),
+                ]
+            )
+            payload = json.loads(report.read_text(encoding="utf-8"))
+            payload.pop("schema_version")
+            invalid.write_text(json.dumps(payload), encoding="utf-8")
+
+            validation_status = main(["validate-report", str(invalid), "--output", str(summary)])
+
+            self.assertEqual(status, 0)
+            self.assertEqual(validation_status, 1)
+            text = summary.read_text(encoding="utf-8")
+            self.assertIn(f"FAIL {invalid}", text)
+            self.assertIn("missing required key schema_version", text)
+
 
 def _write_report(
     path: Path,

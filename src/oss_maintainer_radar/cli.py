@@ -18,6 +18,7 @@ from .render import (
     report_to_markdown,
     submission_pack,
 )
+from .schema_validation import validate_reports
 from .trend import trend_report
 
 
@@ -30,6 +31,11 @@ def main(argv: list[str] | None = None) -> int:
             output = trend_report(args.reports)
             _write_output(output, args.output)
             return 0
+
+        if args.command == "validate-report":
+            output, ok = validate_reports(args.reports, schema_path=args.schema)
+            _write_output(output, args.output)
+            return 0 if ok else 1
 
         snapshot = _snapshot_from_args(args)
         since = _parse_since(args.since) if getattr(args, "since", None) else None
@@ -116,6 +122,15 @@ def build_parser() -> argparse.ArgumentParser:
     trend = subparsers.add_parser("trend", help="Compare saved JSON reports across time.")
     trend.add_argument("reports", nargs="+", type=Path, help="Saved JSON reports from `oss-radar audit --format json`.")
     trend.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    validate = subparsers.add_parser("validate-report", help="Validate JSON reports against the report schema.")
+    validate.add_argument("reports", nargs="+", type=Path, help="Saved JSON reports from `oss-radar audit --format json`.")
+    validate.add_argument(
+        "--schema",
+        type=Path,
+        help="Schema path; defaults to the packaged maintainer report schema.",
+    )
+    validate.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     return parser
 

@@ -74,10 +74,53 @@ def main() -> int:
             ],
             subprocess.DEVNULL,
         ),
+        (
+            "validate report help",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "validate-report",
+                "--help",
+            ],
+            subprocess.DEVNULL,
+        ),
     ]
 
     for label, command, stdout in steps:
         run(label, command, stdout=stdout, pythonpath=True)
+
+    with tempfile.TemporaryDirectory(prefix="oss-radar-report-") as report_tmp:
+        report = Path(report_tmp) / "maintainer-radar.json"
+        run(
+            "write fixture JSON report",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "audit",
+                "--fixture",
+                "examples/sample_github_payload.json",
+                "--format",
+                "json",
+                "--output",
+                str(report),
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
+        run(
+            "validate fixture JSON report",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "validate-report",
+                str(report),
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
 
     with tempfile.TemporaryDirectory(prefix="oss-radar-verify-") as tmp:
         tmp_path = Path(tmp)
@@ -99,17 +142,46 @@ def main() -> int:
         run("install wheel", [str(wheel_python), "-m", "pip", "install", str(wheel)], stdout=subprocess.DEVNULL)
         wheel_cli = venv_script(wheel_python, "oss-radar")
         run("wheel CLI help", [str(wheel_cli), "--help"], stdout=subprocess.DEVNULL)
+        wheel_report = tmp_path / "wheel-report.json"
+        run(
+            "wheel CLI audit JSON",
+            [
+                str(wheel_cli),
+                "audit",
+                "--fixture",
+                str(ROOT / "examples" / "sample_github_payload.json"),
+                "--format",
+                "json",
+                "--output",
+                str(wheel_report),
+            ],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
+        run(
+            "wheel CLI validate report",
+            [str(wheel_cli), "validate-report", str(wheel_report)],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
 
     print("verify: all checks passed")
     return 0
 
 
-def run(label: str, command: list[str], *, stdout=None, pythonpath: bool = False) -> None:
+def run(
+    label: str,
+    command: list[str],
+    *,
+    stdout=None,
+    pythonpath: bool = False,
+    cwd: Path = ROOT,
+) -> None:
     print(f"verify: {label}")
     env = {**os.environ, "PIP_DISABLE_PIP_VERSION_CHECK": "1"}
     if pythonpath:
         env["PYTHONPATH"] = str(ROOT / "src")
-    subprocess.run(command, cwd=ROOT, env=env, stdout=stdout, check=True)
+    subprocess.run(command, cwd=cwd, env=env, stdout=stdout, check=True)
 
 
 def one(paths) -> Path:
@@ -127,6 +199,7 @@ def inspect_sdist(source: Path) -> None:
         "docs/package-release.md",
         "examples/evidence.json",
         "schemas/maintainer-report.schema.json",
+        "src/oss_maintainer_radar/schemas/maintainer-report.schema.json",
         "action.yml",
         "examples/applicant.example.json",
         "tests/test_cli.py",

@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.8.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.9.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -61,8 +61,16 @@ keeps the original labels unchanged.
 If you save JSON artifacts from multiple runs, compare them locally:
 
 ```bash
+oss-radar validate-report \
+  reports/week-1/maintainer-radar.json \
+  reports/week-2/maintainer-radar.json
+
 oss-radar trend reports/week-1/maintainer-radar.json reports/week-2/maintainer-radar.json
 ```
+
+Run validation first after downloading artifacts. A `PASS` summary means the
+file matches the current report schema; a `FAIL` summary should be fixed or
+kept out of trend reports until a maintainer reviews the mismatch.
 
 ## Maintainer Review
 
