@@ -11,10 +11,12 @@ def analyze_snapshot(
     *,
     now: datetime | None = None,
     stale_days: int = 30,
+    since: datetime | None = None,
 ) -> MaintainerReport:
     generated_at = now or datetime.now(timezone.utc)
-    open_issues = [issue for issue in snapshot.issues if issue.state == "open"]
-    open_prs = [pr for pr in snapshot.pull_requests if pr.state == "open" and not pr.draft]
+    filtered_snapshot = _filter_snapshot(snapshot, since)
+    open_issues = [issue for issue in filtered_snapshot.issues if issue.state == "open"]
+    open_prs = [pr for pr in filtered_snapshot.pull_requests if pr.state == "open" and not pr.draft]
 
     stale_issues = tuple(
         WorkItem(
@@ -41,24 +43,25 @@ def analyze_snapshot(
     )
 
     label_counts = Counter(label for issue in open_issues for label in issue.labels)
-    latest_release = _latest_release(snapshot.releases)
+    latest_release = _latest_release(filtered_snapshot.releases)
 
     return MaintainerReport(
-        repository=snapshot.repository,
+        repository=filtered_snapshot.repository,
         generated_at=generated_at,
+        window_start=since,
         open_issue_count=len(open_issues),
         stale_issue_count=len(stale_issues),
-        sampled_pull_request_count=len(snapshot.pull_requests),
+        sampled_pull_request_count=len(filtered_snapshot.pull_requests),
         open_pull_request_count=len(open_prs),
         stale_pull_request_count=len(review_backlog),
         label_counts=dict(label_counts.most_common()),
         stale_issues=stale_issues,
         review_backlog=review_backlog,
         latest_release=latest_release,
-        release_notes=_release_notes(snapshot, latest_release),
-        qualification_signals=_qualification_signals(snapshot),
-        risks=_risks(snapshot),
-        evidence=snapshot.evidence,
+        release_notes=_release_notes(filtered_snapshot, latest_release),
+        qualification_signals=_qualification_signals(filtered_snapshot),
+        risks=_risks(filtered_snapshot),
+        evidence=filtered_snapshot.evidence,
     )
 
 
@@ -73,6 +76,26 @@ def _latest_release(releases: tuple[Release, ...]) -> Release | None:
     if not published:
         return None
     return sorted(published, key=lambda release: release.published_at or datetime.min, reverse=True)[0]
+
+
+def _filter_snapshot(snapshot: RepoSnapshot, since: datetime | None) -> RepoSnapshot:
+    if since is None:
+        return snapshot
+    return RepoSnapshot(
+        repository=snapshot.repository,
+        issues=tuple(issue for issue in snapshot.issues if _in_window(issue.updated_at or issue.created_at, since)),
+        pull_requests=tuple(
+            pr for pr in snapshot.pull_requests if _in_window(pr.updated_at or pr.created_at, since)
+        ),
+        releases=tuple(release for release in snapshot.releases if _in_window(release.published_at, since)),
+        evidence=snapshot.evidence,
+    )
+
+
+def _in_window(value: datetime | None, since: datetime) -> bool:
+    if value is None:
+        return False
+    return value >= since
 
 
 def _release_notes(snapshot: RepoSnapshot, latest_release: Release | None) -> tuple[str, ...]:

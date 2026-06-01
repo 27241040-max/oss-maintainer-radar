@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from datetime import datetime, time, timezone
 from pathlib import Path
 
 from .analyzer import analyze_snapshot
@@ -25,7 +26,8 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         snapshot = _snapshot_from_args(args)
-        report = analyze_snapshot(snapshot, stale_days=args.stale_days)
+        since = _parse_since(args.since) if getattr(args, "since", None) else None
+        report = analyze_snapshot(snapshot, stale_days=args.stale_days, since=since)
         applicant = load_applicant(args.applicant) if getattr(args, "applicant", None) else None
 
         if args.command == "audit":
@@ -115,6 +117,7 @@ def _add_snapshot_args(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     parser.add_argument("--evidence", type=Path, help="Path to optional adoption and maintainer evidence JSON.")
     parser.add_argument("--applicant", type=Path, help="Path to optional private applicant profile JSON.")
     parser.add_argument("--stale-days", type=int, default=30, help="Days without update before an issue is stale.")
+    parser.add_argument("--since", help="Only count issues, pull requests, and releases updated after this ISO date.")
     return parser
 
 
@@ -135,6 +138,21 @@ def _write_output(value: str, output: Path | None) -> None:
         output.write_text(value, encoding="utf-8")
     else:
         print(value, end="")
+
+
+def _parse_since(value: str) -> datetime:
+    normalized = value.strip().replace("Z", "+00:00")
+    try:
+        if "T" not in normalized and " " not in normalized:
+            parsed = datetime.combine(datetime.fromisoformat(normalized).date(), time.min, tzinfo=timezone.utc)
+        else:
+            parsed = datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError("Use an ISO date or datetime for --since, for example 2026-05-01") from exc
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 if __name__ == "__main__":  # pragma: no cover

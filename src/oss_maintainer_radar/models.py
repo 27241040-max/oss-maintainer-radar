@@ -216,6 +216,7 @@ class WorkItem:
 class MaintainerReport:
     repository: Repository
     generated_at: datetime
+    window_start: datetime | None
     open_issue_count: int
     stale_issue_count: int
     sampled_pull_request_count: int

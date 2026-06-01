@@ -7,6 +7,7 @@
     "schema_version",
     "repository",
     "generated_at",
+    "window_start",
     "open_issue_count",
     "stale_issue_count",
     "sampled_pull_request_count",
@@ -32,6 +33,12 @@
     },
     "generated_at": {
       "type": "string"
+    },
+    "window_start": {
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "open_issue_count": {
       "type": "integer",

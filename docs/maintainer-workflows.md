@@ -65,3 +65,15 @@ Before publishing:
 - check stale PRs that may contain release blockers
 - review recent completed PRs for changelog entries
 - keep release notes separate from unverifiable marketing claims
+
+## Release Windows
+
+```bash
+oss-radar scorecard --repo owner/repo --since 2026-05-01 --output reports/may-scorecard.md
+```
+
+Use release-window filters to:
+
+- focus scorecards on work updated after a release branch opened
+- keep stale issue and PR counts tied to a specific milestone
+- compare current release work against the full repository report

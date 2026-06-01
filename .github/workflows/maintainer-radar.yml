@@ -11,6 +11,10 @@ on:
         description: "Days without updates before an issue is considered stale."
         required: false
         default: "30"
+      since:
+        description: "Optional ISO date or datetime for release-window filtering."
+        required: false
+        default: ""
   schedule:
     - cron: "17 8 * * 1"
 
@@ -23,6 +27,7 @@ jobs:
     env:
       TARGET_REPO: ${{ github.event.inputs.target_repo || github.repository }}
       STALE_DAYS: ${{ github.event.inputs.stale_days || '30' }}
+      SINCE: ${{ github.event.inputs.since || '' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -33,6 +38,7 @@ jobs:
         with:
           target_repo: ${{ env.TARGET_REPO }}
           stale_days: ${{ env.STALE_DAYS }}
+          since: ${{ env.SINCE }}
           output_dir: reports
           github_token: ${{ github.token }}
       - uses: actions/upload-artifact@v7

@@ -15,6 +15,10 @@ inputs:
     description: Days without updates before an issue is considered stale.
     required: false
     default: "30"
+  since:
+    description: Optional ISO date or datetime for release-window filtering.
+    required: false
+    default: ""
   output_dir:
     description: Directory where generated reports are written.
     required: false
@@ -71,25 +75,34 @@ runs:
         if [ -z "$target_repo" ]; then
           target_repo="$GITHUB_REPOSITORY"
         fi
+        since_args=()
+        if [ -n "${{ inputs.since }}" ]; then
+          since_args=(--since "${{ inputs.since }}")
+        fi
 
         oss-radar audit \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
+          "${since_args[@]}" \
           --output "${{ steps.paths.outputs.report_path }}"
         oss-radar audit \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
           --format json \
+          "${since_args[@]}" \
           --output "${{ steps.paths.outputs.report_json_path }}"
         oss-radar scorecard \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
+          "${since_args[@]}" \
           --output "${{ steps.paths.outputs.scorecard_path }}"
         oss-radar action-plan \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
+          "${since_args[@]}" \
           --output "${{ steps.paths.outputs.action_plan_path }}"
         oss-radar codex-prompts \
           --repo "$target_repo" \
           --stale-days "${{ inputs.stale_days }}" \
+          "${since_args[@]}" \
           --output "${{ steps.paths.outputs.prompts_path }}"

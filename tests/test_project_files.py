@@ -14,6 +14,7 @@ class ProjectFileTests(unittest.TestCase):
         self.assertIn("using: composite", text)
         self.assertIn("target_repo:", text)
         self.assertIn("github_token:", text)
+        self.assertIn("since:", text)
         self.assertIn("report_json_path:", text)
         self.assertIn("oss-radar audit", text)
         self.assertIn("--format json", text)
@@ -27,12 +28,13 @@ class ProjectFileTests(unittest.TestCase):
         self.assertIn("uses: ./", text)
         self.assertIn("target_repo: ${{ env.TARGET_REPO }}", text)
         self.assertIn("stale_days: ${{ env.STALE_DAYS }}", text)
+        self.assertIn("since: ${{ env.SINCE }}", text)
         self.assertIn("path: reports/", text)
 
     def test_readme_documents_reusable_action(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("27241040-max/oss-maintainer-radar@v0.4.0", text)
+        self.assertIn("27241040-max/oss-maintainer-radar@v0.5.0", text)
         self.assertIn("docs/action-usage.md", text)
         self.assertIn("schemas/maintainer-report.schema.json", text)
 

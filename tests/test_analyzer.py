@@ -66,6 +66,37 @@ class AnalyzerTests(unittest.TestCase):
         self.assertTrue(any("5200 monthly downloads" in signal for signal in report.qualification_signals))
         self.assertFalse(any("Low public adoption" in risk for risk in report.risks))
 
+    def test_since_filters_release_window_evidence(self) -> None:
+        snapshot = load_snapshot(FIXTURE)
+        report = analyze_snapshot(
+            snapshot,
+            now=datetime(2026, 6, 1, tzinfo=timezone.utc),
+            stale_days=30,
+            since=datetime(2026, 5, 1, tzinfo=timezone.utc),
+        )
+
+        self.assertEqual(report.window_start, datetime(2026, 5, 1, tzinfo=timezone.utc))
+        self.assertEqual(report.open_issue_count, 1)
+        self.assertEqual(report.stale_issue_count, 0)
+        self.assertEqual(report.sampled_pull_request_count, 1)
+        self.assertEqual(report.open_pull_request_count, 1)
+        self.assertIsNone(report.latest_release)
+        self.assertTrue(any("No release sample" in risk for risk in report.risks))
+
+    def test_since_can_produce_empty_window(self) -> None:
+        snapshot = load_snapshot(FIXTURE)
+        report = analyze_snapshot(
+            snapshot,
+            now=datetime(2026, 6, 1, tzinfo=timezone.utc),
+            stale_days=30,
+            since=datetime(2026, 6, 2, tzinfo=timezone.utc),
+        )
+
+        self.assertEqual(report.open_issue_count, 0)
+        self.assertEqual(report.sampled_pull_request_count, 0)
+        self.assertIsNone(report.latest_release)
+        self.assertTrue(any("No pull request sample" in risk for risk in report.risks))
+
     def test_load_applicant_profile(self) -> None:
         applicant = load_applicant(APPLICANT_FIXTURE)
 

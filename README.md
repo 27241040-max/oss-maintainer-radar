@@ -113,6 +113,12 @@ Fetch a public GitHub repository and audit it:
 oss-radar audit --repo psf/requests
 ```
 
+Limit a report to a release window:
+
+```bash
+oss-radar scorecard --repo psf/requests --since 2026-05-01
+```
+
 If you have a `GITHUB_TOKEN`, the CLI will use it for higher rate limits. The
 token is never printed.
 
@@ -121,7 +127,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.4.0
+- uses: 27241040-max/oss-maintainer-radar@v0.5.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -192,8 +198,9 @@ help with:
 - regression-risk checklists
 - security-review routing
 
-The current CLI keeps these workflows deterministic and local. The generated
-Codex prompts make it easy to add AI assistance without hiding the evidence.
+The current CLI and Action keep these workflows deterministic. Release-window
+filtering and generated Codex prompts make it easy to add AI assistance without
+hiding the evidence.
 
 ## Development
 

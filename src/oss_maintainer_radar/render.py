@@ -15,6 +15,7 @@ def report_to_dict(report: MaintainerReport) -> dict:
     data = asdict(report)
     data["schema_version"] = "1.0"
     data["generated_at"] = report.generated_at.isoformat()
+    data["window_start"] = report.window_start.isoformat() if report.window_start else None
     if report.latest_release and data["latest_release"]:
         data["latest_release"]["published_at"] = (
             report.latest_release.published_at.isoformat()
@@ -31,6 +32,7 @@ def report_to_markdown(report: MaintainerReport) -> str:
         f"# Maintainer Radar: {repo.full_name}",
         "",
         f"Generated: {report.generated_at.isoformat()}",
+        f"Window start: {report.window_start.isoformat() if report.window_start else 'not set'}",
         "",
         "## Repository",
         "",
@@ -237,6 +239,7 @@ def maintenance_scorecard(report: MaintainerReport) -> str:
         f"# Maintenance Scorecard: {repo.full_name}",
         "",
         f"Generated: {report.generated_at.isoformat()}",
+        f"Window start: {report.window_start.isoformat() if report.window_start else 'not set'}",
         "",
         f"Score: {scorecard['score']}/{scorecard['total']}",
         "",
@@ -267,6 +270,7 @@ def action_plan(report: MaintainerReport) -> str:
         f"# Maintainer Action Plan: {repo.full_name}",
         "",
         f"Generated: {report.generated_at.isoformat()}",
+        f"Window start: {report.window_start.isoformat() if report.window_start else 'not set'}",
         "",
         "## Immediate",
         "",
@@ -293,6 +297,7 @@ def submission_pack(
         f"Repository: {repo.full_name}",
         f"Repository URL: {repo.url or 'unknown'}",
         f"Generated: {report.generated_at.isoformat()}",
+        f"Window start: {report.window_start.isoformat() if report.window_start else 'not set'}",
         "",
         "## Before You Submit",
         "",

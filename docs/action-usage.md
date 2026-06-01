@@ -23,10 +23,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.4.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.5.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
+          since: "2026-05-01"
       - uses: actions/upload-artifact@v7
         with:
           name: maintainer-radar-report
@@ -45,6 +46,7 @@ The action writes:
 
 - `target_repo`: repository to audit, such as `owner/repo`; defaults to the current repository.
 - `stale_days`: days without updates before an issue is considered stale; defaults to `30`.
+- `since`: optional ISO date or datetime for release-window filtering.
 - `output_dir`: directory for generated files; defaults to `reports`.
 - `github_token`: optional token for GitHub API rate limits.
 

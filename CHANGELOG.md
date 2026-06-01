@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.5.0 - 2026-06-01
+
+- Added `--since` release-window filtering for issue, pull request, and release evidence.
+- Added release-window support to the reusable GitHub Action.
+- Added release-window metadata to Markdown and JSON reports.
+- Added tests for populated and empty release windows.
+
 ## 0.4.0 - 2026-06-01
 
 - Added a JSON Schema for machine-readable maintainer reports.

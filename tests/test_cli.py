@@ -198,6 +198,27 @@ class CliTests(unittest.TestCase):
             self.assertIn("[REVIEW] Adoption evidence", text)
             self.assertIn("not a guarantee", text)
 
+    def test_since_option_limits_report_window(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "report.md"
+            status = main(
+                [
+                    "audit",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--since",
+                    "2026-05-01",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Window start: 2026-05-01T00:00:00+00:00", text)
+            self.assertIn("Open issues in sample: 1", text)
+            self.assertIn("Pull requests in sample: 1", text)
+
     def test_submission_pack_includes_manual_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "submission-pack.md"
