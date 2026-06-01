@@ -24,11 +24,33 @@ oss-radar submission-pack --repo owner/repo --role primary --output reports/subm
 oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
 
+If you have verified evidence outside GitHub stars and forks, create an evidence
+file:
+
+```json
+{
+  "monthly_downloads": 5200,
+  "dependents": 18,
+  "ecosystem_importance": "Used by maintainers to prepare issue triage and release readiness notes.",
+  "maintainer_responsibilities": ["Review pull requests", "Triage issues"],
+  "usage_notes": ["Replace sample values with current public metrics."],
+  "source_urls": ["https://github.com/owner/repo"]
+}
+```
+
+Then pass it to the commands:
+
+```bash
+oss-radar submission-pack --repo owner/repo --evidence evidence.json --role primary --output reports/submission-pack.md
+oss-radar readiness --repo owner/repo --evidence evidence.json --role primary --output reports/readiness.md
+```
+
 Then confirm:
 
 - the repository is public
 - your GitHub profile is public
 - stars, forks, issues, pull requests, releases, and downloads are current
+- additional evidence includes public source URLs
 - your maintainer role is true and verifiable
 - your API-credit plan is limited to repositories you own or are authorized to maintain
 

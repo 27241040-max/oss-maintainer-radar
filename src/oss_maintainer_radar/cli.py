@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from .analyzer import analyze_snapshot
-from .github import fetch_snapshot, load_snapshot
+from .github import fetch_snapshot, load_evidence, load_snapshot
 from .render import (
     application_draft,
     codex_prompts,
@@ -86,14 +86,20 @@ def _add_snapshot_args(parser: argparse.ArgumentParser) -> argparse.ArgumentPars
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument("--repo", help="GitHub repo as owner/name or https://github.com/owner/name.")
     source.add_argument("--fixture", type=Path, help="Path to a saved GitHub snapshot JSON file.")
+    parser.add_argument("--evidence", type=Path, help="Path to optional adoption and maintainer evidence JSON.")
     parser.add_argument("--stale-days", type=int, default=30, help="Days without update before an issue is stale.")
     return parser
 
 
 def _snapshot_from_args(args: argparse.Namespace):
     if args.fixture:
-        return load_snapshot(args.fixture)
-    return fetch_snapshot(args.repo)
+        snapshot = load_snapshot(args.fixture)
+    else:
+        snapshot = fetch_snapshot(args.repo)
+
+    if args.evidence:
+        snapshot = snapshot.with_evidence(load_evidence(args.evidence))
+    return snapshot
 
 
 def _write_output(value: str, output: Path | None) -> None:

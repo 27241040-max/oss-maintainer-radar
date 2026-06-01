@@ -57,6 +57,7 @@ def analyze_snapshot(
         release_notes=_release_notes(snapshot, latest_release),
         qualification_signals=_qualification_signals(snapshot),
         risks=_risks(snapshot),
+        evidence=snapshot.evidence,
     )
 
 
@@ -100,12 +101,20 @@ def _release_notes(snapshot: RepoSnapshot, latest_release: Release | None) -> tu
 
 def _qualification_signals(snapshot: RepoSnapshot) -> tuple[str, ...]:
     repo = snapshot.repository
+    evidence = snapshot.evidence
     signals = [
         f"{repo.full_name} is public at {repo.url or 'an unspecified URL'}.",
         f"Repository signals: {repo.stars} stars, {repo.forks} forks, {repo.open_issues} open GitHub issues.",
     ]
 
-    if repo.stars >= 100 or repo.forks >= 20:
+    if evidence.monthly_downloads is not None:
+        signals.append(f"Additional evidence: {evidence.monthly_downloads} monthly downloads.")
+    if evidence.dependents is not None:
+        signals.append(f"Additional evidence: {evidence.dependents} dependents.")
+    if evidence.ecosystem_importance:
+        signals.append(f"Ecosystem importance: {evidence.ecosystem_importance}")
+
+    if repo.stars >= 100 or repo.forks >= 20 or evidence.has_adoption_signal():
         signals.append("The repository shows visible adoption signals.")
     else:
         signals.append("Adoption signals are still early; do not overstate usage.")
@@ -121,14 +130,16 @@ def _qualification_signals(snapshot: RepoSnapshot) -> tuple[str, ...]:
 
 def _risks(snapshot: RepoSnapshot) -> tuple[str, ...]:
     repo = snapshot.repository
+    evidence = snapshot.evidence
     risks: list[str] = []
     if repo.archived:
         risks.append("Repository is archived, which conflicts with active-maintenance expectations.")
-    if repo.stars < 10 and repo.forks < 3:
+    if repo.stars < 10 and repo.forks < 3 and not evidence.has_adoption_signal():
         risks.append("Low public adoption may weaken a Codex for OSS application.")
+    if evidence.has_adoption_signal() and not evidence.source_urls:
+        risks.append("Additional adoption evidence should include source URLs before submission.")
     if not snapshot.pull_requests:
         risks.append("No pull request sample was found; review workload evidence may be weak.")
     if not snapshot.releases:
         risks.append("No release sample was found; release-management evidence may be weak.")
     return tuple(risks)
-

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import RepoSnapshot
+from .models import Evidence
 
 
 GITHUB_API = "https://api.github.com"
@@ -18,6 +19,11 @@ GITHUB_API = "https://api.github.com"
 def load_snapshot(path: str | Path) -> RepoSnapshot:
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     return RepoSnapshot.from_payload(payload)
+
+
+def load_evidence(path: str | Path) -> Evidence:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    return Evidence.from_payload(payload)
 
 
 def fetch_snapshot(repo: str, *, token: str | None = None, per_page: int = 100) -> RepoSnapshot:
@@ -78,4 +84,3 @@ def _github_get(path: str, token: str | None) -> Any:
         raise RuntimeError(f"GitHub API request failed with {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"GitHub API request failed: {exc.reason}") from exc
-

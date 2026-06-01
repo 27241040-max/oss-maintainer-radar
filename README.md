@@ -60,6 +60,16 @@ Create a combined submission pack:
 oss-radar submission-pack --fixture examples/sample_github_payload.json --role primary --output reports/submission-pack.md
 ```
 
+Add manually verified evidence such as downloads, dependents, or ecosystem notes:
+
+```bash
+oss-radar submission-pack \
+  --fixture examples/sample_github_payload.json \
+  --evidence examples/evidence.json \
+  --role primary \
+  --output reports/submission-pack.md
+```
+
 Run a conservative readiness self-check:
 
 ```bash
@@ -110,6 +120,7 @@ Use this tool to prepare an accurate application:
 
 For one combined file, run `oss-radar submission-pack --repo owner/repo --role primary`.
 For a risk-oriented self-check, run `oss-radar readiness --repo owner/repo --role primary`.
+If you have verified downloads, dependents, or ecosystem-importance evidence, put it in a JSON file shaped like `examples/evidence.json` and pass `--evidence path/to/evidence.json`.
 
 See [docs/codex-for-oss-application.md](docs/codex-for-oss-application.md) for
 a field-by-field checklist.

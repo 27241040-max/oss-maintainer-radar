@@ -45,11 +45,16 @@ oss-radar codex-prompts --repo owner/repo --output reports/codex-prompts.md
 oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
 
+For downloads, dependents, or ecosystem importance that GitHub does not expose,
+create a JSON evidence file and pass `--evidence evidence.json`. Only include
+claims that have public source URLs.
+
 Then check every generated claim:
 
 - Do you actually have maintainer permissions?
 - Is the repository public?
 - Are stars, forks, issues, PRs, releases, and downloads current?
+- Do additional evidence claims include source URLs?
 - Can you explain why the project matters without exaggerating?
 - Are API-credit plans limited to the project you maintain?
 

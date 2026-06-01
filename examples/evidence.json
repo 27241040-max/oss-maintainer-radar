@@ -1,0 +1,18 @@
+{
+  "monthly_downloads": 5200,
+  "dependents": 18,
+  "ecosystem_importance": "Used by maintainers to prepare issue triage, pull request review briefs, and release readiness notes.",
+  "maintainer_responsibilities": [
+    "Review pull requests for correctness, tests, and release-note impact.",
+    "Triage incoming issues and route bug, documentation, and security-sensitive reports.",
+    "Prepare releases and keep changelog entries tied to public repository evidence."
+  ],
+  "usage_notes": [
+    "Replace these sample values with current public metrics before applying."
+  ],
+  "source_urls": [
+    "https://github.com/example/oss-maintainer-radar",
+    "https://pypistats.org/packages/example-package"
+  ]
+}
+

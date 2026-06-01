@@ -118,6 +118,7 @@ class RepoSnapshot:
     issues: tuple[Issue, ...] = ()
     pull_requests: tuple[PullRequest, ...] = ()
     releases: tuple[Release, ...] = ()
+    evidence: "Evidence" = field(default_factory=lambda: Evidence())
 
     @classmethod
     def from_payload(cls, payload: dict[str, Any]) -> "RepoSnapshot":
@@ -137,6 +138,47 @@ class RepoSnapshot:
             issues=tuple(issues),
             pull_requests=tuple(PullRequest.from_github(item) for item in pull_payloads),
             releases=tuple(Release.from_github(item) for item in release_payloads),
+            evidence=Evidence.from_payload(payload.get("evidence") or {}),
+        )
+
+    def with_evidence(self, evidence: "Evidence") -> "RepoSnapshot":
+        return RepoSnapshot(
+            repository=self.repository,
+            issues=self.issues,
+            pull_requests=self.pull_requests,
+            releases=self.releases,
+            evidence=evidence,
+        )
+
+
+@dataclass(frozen=True)
+class Evidence:
+    monthly_downloads: int | None = None
+    dependents: int | None = None
+    ecosystem_importance: str = ""
+    maintainer_responsibilities: tuple[str, ...] = ()
+    usage_notes: tuple[str, ...] = ()
+    source_urls: tuple[str, ...] = ()
+
+    @classmethod
+    def from_payload(cls, payload: dict[str, Any]) -> "Evidence":
+        return cls(
+            monthly_downloads=_optional_int(payload.get("monthly_downloads")),
+            dependents=_optional_int(payload.get("dependents")),
+            ecosystem_importance=str(payload.get("ecosystem_importance") or ""),
+            maintainer_responsibilities=tuple(
+                str(item) for item in payload.get("maintainer_responsibilities", []) if str(item).strip()
+            ),
+            usage_notes=tuple(str(item) for item in payload.get("usage_notes", []) if str(item).strip()),
+            source_urls=tuple(str(item) for item in payload.get("source_urls", []) if str(item).strip()),
+        )
+
+    def has_adoption_signal(self) -> bool:
+        return bool(
+            (self.monthly_downloads and self.monthly_downloads > 0)
+            or (self.dependents and self.dependents > 0)
+            or self.ecosystem_importance.strip()
+            or self.usage_notes
         )
 
 
@@ -164,6 +206,7 @@ class MaintainerReport:
     release_notes: tuple[str, ...] = ()
     qualification_signals: tuple[str, ...] = ()
     risks: tuple[str, ...] = ()
+    evidence: Evidence = field(default_factory=Evidence)
 
 
 def _label_names(labels: list[Any]) -> list[str]:
@@ -175,3 +218,8 @@ def _label_names(labels: list[Any]) -> list[str]:
             names.append(str(label["name"]))
     return names
 
+
+def _optional_int(value: Any) -> int | None:
+    if value in (None, ""):
+        return None
+    return int(value)

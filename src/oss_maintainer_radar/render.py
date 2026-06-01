@@ -27,16 +27,25 @@ def report_to_markdown(report: MaintainerReport) -> str:
         f"- Default branch: {repo.default_branch}",
         f"- Archived: {'yes' if repo.archived else 'no'}",
         "",
-        "## Workload",
-        "",
-        f"- Open issues in sample: {report.open_issue_count}",
-        f"- Stale issues: {report.stale_issue_count}",
-        f"- Open pull requests in sample: {report.open_pull_request_count}",
-        f"- Pull requests awaiting attention: {report.stale_pull_request_count}",
-        "",
-        "## Label Mix",
+        "## Additional Evidence",
         "",
     ]
+
+    lines.extend(_evidence_lines(report))
+    lines.extend(
+        [
+            "",
+            "## Workload",
+            "",
+            f"- Open issues in sample: {report.open_issue_count}",
+            f"- Stale issues: {report.stale_issue_count}",
+            f"- Open pull requests in sample: {report.open_pull_request_count}",
+            f"- Pull requests awaiting attention: {report.stale_pull_request_count}",
+            "",
+            "## Label Mix",
+            "",
+        ]
+    )
 
     if report.label_counts:
         lines.extend(f"- {label}: {count}" for label, count in report.label_counts.items())
@@ -65,11 +74,13 @@ def report_to_markdown(report: MaintainerReport) -> str:
 
 
 def application_draft(report: MaintainerReport, *, role: str) -> str:
+    evidence_clauses = _application_evidence_clauses(report)
     qualifies = _fit_500(
         " ".join(
             [
                 f"I am a {role} maintainer of {report.repository.full_name}.",
                 f"The repo has {report.repository.stars} stars and {report.repository.forks} forks.",
+                *evidence_clauses,
                 f"Current maintenance surface includes {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')} in the sampled data.",
                 "The project benefits from evidence-based triage, review, release management, and quality work.",
             ]
@@ -191,9 +202,15 @@ def readiness_check(report: MaintainerReport, *, role: str) -> str:
         ),
         _check(
             "Adoption evidence",
-            repo.stars >= 10 or repo.forks >= 3,
-            f"Repository has {repo.stars} stars and {repo.forks} forks.",
+            repo.stars >= 10 or repo.forks >= 3 or report.evidence.has_adoption_signal(),
+            _adoption_success(report),
             "Collect truthful usage evidence such as stars, forks, downloads, dependents, or ecosystem importance.",
+        ),
+        _check(
+            "Evidence sources",
+            not report.evidence.has_adoption_signal() or bool(report.evidence.source_urls),
+            "Additional evidence includes source URLs.",
+            "Add source URLs for downloads, dependents, or ecosystem-importance claims.",
         ),
         _check(
             "Maintenance workload evidence",
@@ -251,6 +268,46 @@ def readiness_check(report: MaintainerReport, *, role: str) -> str:
         ]
     )
     return "\n".join(lines) + "\n"
+
+
+def _evidence_lines(report: MaintainerReport) -> list[str]:
+    evidence = report.evidence
+    lines: list[str] = []
+    if evidence.monthly_downloads is not None:
+        lines.append(f"- Monthly downloads: {evidence.monthly_downloads}")
+    if evidence.dependents is not None:
+        lines.append(f"- Dependents: {evidence.dependents}")
+    if evidence.ecosystem_importance:
+        lines.append(f"- Ecosystem importance: {evidence.ecosystem_importance}")
+    lines.extend(f"- Maintainer responsibility: {item}" for item in evidence.maintainer_responsibilities)
+    lines.extend(f"- Usage note: {item}" for item in evidence.usage_notes)
+    lines.extend(f"- Source: {item}" for item in evidence.source_urls)
+    if not lines:
+        lines.append("- No additional evidence file was provided.")
+    return lines
+
+
+def _application_evidence_clauses(report: MaintainerReport) -> list[str]:
+    evidence = report.evidence
+    clauses: list[str] = []
+    if evidence.monthly_downloads is not None:
+        clauses.append(f"It has about {evidence.monthly_downloads} monthly downloads.")
+    if evidence.dependents is not None:
+        clauses.append(f"It has {evidence.dependents} dependents.")
+    if evidence.ecosystem_importance:
+        clauses.append(evidence.ecosystem_importance)
+    return clauses
+
+
+def _adoption_success(report: MaintainerReport) -> str:
+    parts = [f"{report.repository.stars} stars", f"{report.repository.forks} forks"]
+    if report.evidence.monthly_downloads is not None:
+        parts.append(f"{report.evidence.monthly_downloads} monthly downloads")
+    if report.evidence.dependents is not None:
+        parts.append(f"{report.evidence.dependents} dependents")
+    if report.evidence.ecosystem_importance:
+        parts.append("ecosystem-importance notes")
+    return "Repository has " + ", ".join(parts) + "."
 
 
 def _work_items(items: tuple[WorkItem, ...], empty: str) -> list[str]:

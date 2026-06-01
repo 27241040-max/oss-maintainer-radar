@@ -11,6 +11,7 @@ from oss_maintainer_radar.render import application_draft
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
+EVIDENCE_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "evidence.json"
 
 
 class CliTests(unittest.TestCase):
@@ -105,6 +106,28 @@ class CliTests(unittest.TestCase):
             self.assertIn("Codex for Open Source Readiness", text)
             self.assertIn("[REVIEW] Adoption evidence", text)
             self.assertIn("not a guarantee", text)
+
+    def test_submission_pack_includes_manual_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "submission-pack.md"
+            status = main(
+                [
+                    "submission-pack",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--evidence",
+                    str(EVIDENCE_FIXTURE),
+                    "--role",
+                    "primary",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Monthly downloads: 5200", text)
+            self.assertIn("It has about 5200 monthly downloads.", text)
 
 
 if __name__ == "__main__":

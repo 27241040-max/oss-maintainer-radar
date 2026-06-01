@@ -5,11 +5,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from oss_maintainer_radar.analyzer import analyze_snapshot
-from oss_maintainer_radar.github import load_snapshot, parse_repo_ref
+from oss_maintainer_radar.github import load_evidence, load_snapshot, parse_repo_ref
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "sample_github_payload.json"
 NEW_PROJECT_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "new_project_payload.json"
+EVIDENCE_FIXTURE = Path(__file__).resolve().parents[1] / "examples" / "evidence.json"
 
 
 class AnalyzerTests(unittest.TestCase):
@@ -50,6 +51,18 @@ class AnalyzerTests(unittest.TestCase):
         self.assertTrue(any("early" in signal for signal in report.qualification_signals))
         self.assertTrue(any("Low public adoption" in risk for risk in report.risks))
         self.assertTrue(any("No pull request" in risk for risk in report.risks))
+
+    def test_manual_evidence_counts_as_adoption_signal(self) -> None:
+        snapshot = load_snapshot(NEW_PROJECT_FIXTURE).with_evidence(load_evidence(EVIDENCE_FIXTURE))
+        report = analyze_snapshot(
+            snapshot,
+            now=datetime(2026, 6, 1, tzinfo=timezone.utc),
+            stale_days=30,
+        )
+
+        self.assertEqual(report.evidence.monthly_downloads, 5200)
+        self.assertTrue(any("5200 monthly downloads" in signal for signal in report.qualification_signals))
+        self.assertFalse(any("Low public adoption" in risk for risk in report.risks))
 
 
 if __name__ == "__main__":
