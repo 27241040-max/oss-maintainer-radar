@@ -18,6 +18,7 @@ from .render import (
     report_to_markdown,
     submission_pack,
 )
+from .trend import trend_report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,6 +26,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        if args.command == "trend":
+            output = trend_report(args.reports)
+            _write_output(output, args.output)
+            return 0
+
         snapshot = _snapshot_from_args(args)
         since = _parse_since(args.since) if getattr(args, "since", None) else None
         report = analyze_snapshot(snapshot, stale_days=args.stale_days, since=since)
@@ -106,6 +112,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     readiness.add_argument("--role", choices=["primary", "core"], default="primary")
     readiness.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    trend = subparsers.add_parser("trend", help="Compare saved JSON reports across time.")
+    trend.add_argument("reports", nargs="+", type=Path, help="Saved JSON reports from `oss-radar audit --format json`.")
+    trend.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     return parser
 

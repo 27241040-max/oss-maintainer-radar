@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.7.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.8.0
         with:
           github_token: ${{ github.token }}
           output_dir: reports
@@ -57,6 +57,12 @@ sections without inferring impact beyond pull request labels and titles.
 Grouping uses normalized maintainer-label aliases such as `type: bug`,
 `area/docs`, `security-review`, `dependencies`, and `chore`, while the report
 keeps the original labels unchanged.
+
+If you save JSON artifacts from multiple runs, compare them locally:
+
+```bash
+oss-radar trend reports/week-1/maintainer-radar.json reports/week-2/maintainer-radar.json
+```
 
 ## Maintainer Review
 

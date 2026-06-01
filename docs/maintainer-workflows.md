@@ -79,3 +79,17 @@ Use release-window filters to:
 - focus scorecards on work updated after a release branch opened
 - keep stale issue and PR counts tied to a specific milestone
 - compare current release work against the full repository report
+
+## Trend Reports
+
+```bash
+oss-radar audit --repo owner/repo --format json --output reports/week-1.json
+oss-radar audit --repo owner/repo --format json --output reports/week-2.json
+oss-radar trend reports/week-1.json reports/week-2.json --output reports/trend.md
+```
+
+Use trend reports to:
+
+- compare saved reports from the same repository
+- review changes in open issues, stale issues, review backlog, releases, risks, and scorecard score
+- avoid turning trend deltas into adoption or ecosystem-importance claims

@@ -34,9 +34,10 @@ class SchemaTests(unittest.TestCase):
             schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
             payload = json.loads(output.read_text(encoding="utf-8"))
             validate_schema(schema, payload, schema)
-            self.assertEqual(payload["schema_version"], "1.1")
+            self.assertEqual(payload["schema_version"], "1.2")
             self.assertIn("scorecard", payload)
             self.assertIn("release_note_groups", payload)
+            self.assertIn("release_count", payload)
             self.assertGreater(payload["scorecard"]["total"], 0)
 
 

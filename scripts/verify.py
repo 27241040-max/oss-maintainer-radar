@@ -63,6 +63,17 @@ def main() -> int:
             ],
             subprocess.DEVNULL,
         ),
+        (
+            "trend help",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "trend",
+                "--help",
+            ],
+            subprocess.DEVNULL,
+        ),
     ]
 
     for label, command, stdout in steps:

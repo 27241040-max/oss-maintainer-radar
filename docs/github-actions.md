@@ -16,6 +16,7 @@ It can:
 - generate a scorecard and action plan
 - generate Codex prompts for triage, review, and release readiness
 - upload the generated files as a workflow artifact
+- provide JSON artifacts that can be compared later with `oss-radar trend`
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
 print the token or commit generated reports back to the repository.

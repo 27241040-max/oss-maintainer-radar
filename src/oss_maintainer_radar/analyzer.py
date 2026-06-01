@@ -63,6 +63,7 @@ def analyze_snapshot(
         sampled_pull_request_count=len(filtered_snapshot.pull_requests),
         open_pull_request_count=len(open_prs),
         stale_pull_request_count=len(review_backlog),
+        release_count=len(filtered_snapshot.releases),
         label_counts=dict(label_counts.most_common()),
         stale_issues=stale_issues,
         review_backlog=review_backlog,

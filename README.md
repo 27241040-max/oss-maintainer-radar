@@ -65,6 +65,14 @@ Generate Codex prompts for maintainer workflows:
 oss-radar codex-prompts --fixture examples/sample_github_payload.json
 ```
 
+Compare saved JSON reports over time:
+
+```bash
+oss-radar audit --repo owner/repo --format json --output reports/week-1.json
+oss-radar audit --repo owner/repo --format json --output reports/week-2.json
+oss-radar trend reports/week-1.json reports/week-2.json
+```
+
 Create a combined submission pack:
 
 ```bash
@@ -133,7 +141,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.7.0
+- uses: 27241040-max/oss-maintainer-radar@v0.8.0
   with:
     github_token: ${{ github.token }}
     output_dir: reports
@@ -187,7 +195,7 @@ setup.
 See [docs/scheduled-maintainer-workflow.md](docs/scheduled-maintainer-workflow.md)
 for an end-to-end weekly workflow using scheduled report artifacts.
 See [schemas/maintainer-report.schema.json](schemas/maintainer-report.schema.json)
-for the machine-readable report schema. The current schema version is `1.1`.
+for the machine-readable report schema. The current schema version is `1.2`.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
 See [docs/examples/self-scorecard.md](docs/examples/self-scorecard.md) and
 [docs/examples/self-action-plan.md](docs/examples/self-action-plan.md) for
@@ -204,6 +212,7 @@ help with:
 - pull request review briefs
 - release-note drafting
 - deterministic release-note grouping
+- trend reports across saved JSON snapshots
 - regression-risk checklists
 - security-review routing
 

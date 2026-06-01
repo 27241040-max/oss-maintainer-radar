@@ -13,7 +13,7 @@ def report_to_json(report: MaintainerReport) -> str:
 
 def report_to_dict(report: MaintainerReport) -> dict:
     data = asdict(report)
-    data["schema_version"] = "1.1"
+    data["schema_version"] = "1.2"
     data["generated_at"] = report.generated_at.isoformat()
     data["window_start"] = report.window_start.isoformat() if report.window_start else None
     if report.latest_release and data["latest_release"]:
@@ -58,6 +58,7 @@ def report_to_markdown(report: MaintainerReport) -> str:
             f"- Pull requests in sample: {report.sampled_pull_request_count}",
             f"- Open pull requests in sample: {report.open_pull_request_count}",
             f"- Pull requests awaiting attention: {report.stale_pull_request_count}",
+            f"- Release records in sample: {report.release_count}",
             "",
             "## Label Mix",
             "",

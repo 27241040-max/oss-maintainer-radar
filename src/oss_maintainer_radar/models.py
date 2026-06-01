@@ -236,6 +236,7 @@ class MaintainerReport:
     sampled_pull_request_count: int
     open_pull_request_count: int
     stale_pull_request_count: int
+    release_count: int
     label_counts: dict[str, int] = field(default_factory=dict)
     stale_issues: tuple[WorkItem, ...] = ()
     review_backlog: tuple[WorkItem, ...] = ()

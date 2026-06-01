@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -242,6 +243,65 @@ class CliTests(unittest.TestCase):
             text = output.read_text(encoding="utf-8")
             self.assertIn("Monthly downloads: 5200", text)
             self.assertIn("It has about 5200 monthly downloads.", text)
+
+    def test_trend_reports_improving_saved_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.md"
+            _write_report(first, open_issues=8, stale_issues=3, review_backlog=2, releases=1, risks=2, score=55)
+            _write_report(latest, open_issues=4, stale_issues=1, review_backlog=0, releases=2, risks=1, score=75)
+
+            status = main(["trend", str(first), str(latest), "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("# Maintainer Trend Report", text)
+            self.assertIn("Open issues: 8 -> 4 (-4, improved)", text)
+            self.assertIn("Review backlog: 2 -> 0 (-2, improved)", text)
+            self.assertIn("Release count: 1 -> 2 (+1, improved)", text)
+            self.assertIn("Scorecard score: 55 -> 75 (+20, improved)", text)
+            self.assertIn("does not predict project health", text)
+
+    def test_trend_reports_worsening_saved_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            _write_report(first, open_issues=2, stale_issues=0, review_backlog=0, releases=2, risks=0, score=90)
+            _write_report(latest, open_issues=5, stale_issues=2, review_backlog=1, releases=2, risks=2, score=65)
+
+            output = Path(tmp) / "trend.md"
+            status = main(["trend", str(first), str(latest), "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Open issues: 2 -> 5 (+3, worsened)", text)
+            self.assertIn("Stale issues: 0 -> 2 (+2, worsened)", text)
+            self.assertIn("Risk count: 0 -> 2 (+2, worsened)", text)
+            self.assertIn("Scorecard score: 90 -> 65 (-25, worsened)", text)
+
+
+def _write_report(
+    path: Path,
+    *,
+    open_issues: int,
+    stale_issues: int,
+    review_backlog: int,
+    releases: int,
+    risks: int,
+    score: int,
+) -> None:
+    payload = {
+        "repository": {"full_name": "example/repo"},
+        "generated_at": path.stem,
+        "open_issue_count": open_issues,
+        "stale_issue_count": stale_issues,
+        "stale_pull_request_count": review_backlog,
+        "release_count": releases,
+        "risks": ["risk"] * risks,
+        "scorecard": {"score": score},
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@
     "sampled_pull_request_count",
     "open_pull_request_count",
     "stale_pull_request_count",
+    "release_count",
     "label_counts",
     "stale_issues",
     "review_backlog",
@@ -27,7 +28,7 @@
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "1.1"
+      "const": "1.2"
     },
     "repository": {
       "$ref": "#/$defs/repository"
@@ -58,6 +59,10 @@
       "minimum": 0
     },
     "stale_pull_request_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "release_count": {
       "type": "integer",
       "minimum": 0
     },

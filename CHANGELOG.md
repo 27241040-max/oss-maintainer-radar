@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.8.0 - 2026-06-01
+
+- Added a `trend` command for comparing two or more saved JSON reports.
+- Added `release_count` to maintainer reports and updated the report schema to `schema_version` 1.2.
+- Added improving and worsening trend tests for open issues, stale issues, review backlog, releases, risk count, and scorecard score.
+- Documented how scheduled workflow artifacts can be saved and compared over time.
+
 ## 0.7.0 - 2026-06-01
 
 - Added deterministic label normalization for common maintainer labels before release-note grouping.
