@@ -42,6 +42,7 @@ Run:
 oss-radar audit --repo owner/repo --output reports/owner-repo.md
 oss-radar application --repo owner/repo --role primary --output reports/application.md
 oss-radar codex-prompts --repo owner/repo --output reports/codex-prompts.md
+oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
 
 Then check every generated claim:
@@ -63,4 +64,3 @@ Use credits for core maintainer work:
 - route security-sensitive reports for careful human review
 
 All generated outputs should be reviewed by maintainers before action.
-

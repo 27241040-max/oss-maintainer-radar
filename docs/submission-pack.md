@@ -21,6 +21,7 @@ Run:
 oss-radar audit --repo owner/repo --output reports/application-evidence.md
 oss-radar application --repo owner/repo --role primary --output reports/application-draft.md
 oss-radar submission-pack --repo owner/repo --role primary --output reports/submission-pack.md
+oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
 
 Then confirm:

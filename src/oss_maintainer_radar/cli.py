@@ -6,7 +6,14 @@ from pathlib import Path
 
 from .analyzer import analyze_snapshot
 from .github import fetch_snapshot, load_snapshot
-from .render import application_draft, codex_prompts, report_to_json, report_to_markdown, submission_pack
+from .render import (
+    application_draft,
+    codex_prompts,
+    readiness_check,
+    report_to_json,
+    report_to_markdown,
+    submission_pack,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,6 +32,8 @@ def main(argv: list[str] | None = None) -> int:
             output = codex_prompts(report)
         elif args.command == "submission-pack":
             output = submission_pack(report, role=args.role)
+        elif args.command == "readiness":
+            output = readiness_check(report, role=args.role)
         else:
             parser.error(f"Unknown command: {args.command}")
             return 2
@@ -63,6 +72,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pack.add_argument("--role", choices=["primary", "core"], default="primary")
     pack.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    readiness = _add_snapshot_args(
+        subparsers.add_parser("readiness", help="Run a conservative Codex for OSS readiness self-check.")
+    )
+    readiness.add_argument("--role", choices=["primary", "core"], default="primary")
+    readiness.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     return parser
 

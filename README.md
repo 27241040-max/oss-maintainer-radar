@@ -60,6 +60,12 @@ Create a combined submission pack:
 oss-radar submission-pack --fixture examples/sample_github_payload.json --role primary --output reports/submission-pack.md
 ```
 
+Run a conservative readiness self-check:
+
+```bash
+oss-radar readiness --fixture examples/new_project_payload.json --role primary
+```
+
 Check how the tool treats a brand-new project with little public evidence:
 
 ```bash
@@ -103,6 +109,7 @@ Use this tool to prepare an accurate application:
 4. Submit only public repositories and roles you can verify.
 
 For one combined file, run `oss-radar submission-pack --repo owner/repo --role primary`.
+For a risk-oriented self-check, run `oss-radar readiness --repo owner/repo --role primary`.
 
 See [docs/codex-for-oss-application.md](docs/codex-for-oss-application.md) for
 a field-by-field checklist.

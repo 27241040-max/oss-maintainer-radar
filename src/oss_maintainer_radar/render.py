@@ -168,6 +168,91 @@ def submission_pack(report: MaintainerReport, *, role: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def readiness_check(report: MaintainerReport, *, role: str) -> str:
+    repo = report.repository
+    checks = [
+        _check(
+            "Public repository URL",
+            bool(repo.url.startswith("https://github.com/")),
+            f"Repository URL is {repo.url or 'missing'}.",
+            "Publish the repository on GitHub and rerun with `--repo owner/repo`.",
+        ),
+        _check(
+            "Repository is active",
+            not repo.archived,
+            "Repository is not archived.",
+            "Unarchive the repository or use an active project you maintain.",
+        ),
+        _check(
+            "Maintainer role selected",
+            role in {"primary", "core"},
+            f"Role is {role} maintainer.",
+            "Choose primary or core maintainer.",
+        ),
+        _check(
+            "Adoption evidence",
+            repo.stars >= 10 or repo.forks >= 3,
+            f"Repository has {repo.stars} stars and {repo.forks} forks.",
+            "Collect truthful usage evidence such as stars, forks, downloads, dependents, or ecosystem importance.",
+        ),
+        _check(
+            "Maintenance workload evidence",
+            report.open_issue_count > 0 or report.open_pull_request_count > 0,
+            f"Sample has {_count(report.open_issue_count, 'open issue')} and {_count(report.open_pull_request_count, 'open pull request')}.",
+            "A brand-new repo may not show ongoing triage or review work yet.",
+        ),
+        _check(
+            "Review surface evidence",
+            report.open_pull_request_count > 0 or report.stale_pull_request_count > 0,
+            f"Sample has {_count(report.open_pull_request_count, 'open pull request')}.",
+            "Show pull request review responsibilities from the public repository or existing project.",
+        ),
+        _check(
+            "Release management evidence",
+            report.latest_release is not None,
+            f"Latest release is {report.latest_release.tag_name if report.latest_release else 'missing'}.",
+            "Create public releases or explain another verifiable maintenance responsibility.",
+        ),
+        _check(
+            "Application-risk review",
+            not report.risks,
+            "No obvious risks were detected in the sampled data.",
+            "Review the risks below and edit application text conservatively.",
+        ),
+    ]
+
+    lines = [
+        f"# Codex for Open Source Readiness: {repo.full_name}",
+        "",
+        f"Generated: {report.generated_at.isoformat()}",
+        "",
+        "This is a self-check, not a guarantee of selection.",
+        "",
+        "## Checks",
+        "",
+    ]
+    lines.extend(f"- {check}" for check in checks)
+
+    lines.extend(["", "## Current Risks", ""])
+    if report.risks:
+        lines.extend(f"- {risk}" for risk in report.risks)
+    else:
+        lines.append("- No obvious application risk was detected in the sampled data.")
+
+    lines.extend(
+        [
+            "",
+            "## Next Actions",
+            "",
+            "- Run against the real public repository, not a fixture, before submitting.",
+            "- Keep GitHub profile and repository visibility public.",
+            "- Fill personal fields and OpenAI organization ID yourself.",
+            "- Do not submit claims you cannot verify.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
 def _work_items(items: tuple[WorkItem, ...], empty: str) -> list[str]:
     if not items:
         return [f"- {empty}"]
@@ -187,3 +272,9 @@ def _fit_500(value: str) -> str:
 def _count(value: int, label: str) -> str:
     suffix = "" if value == 1 else "s"
     return f"{value} {label}{suffix}"
+
+
+def _check(name: str, passed: bool, success: str, failure: str) -> str:
+    status = "PASS" if passed else "REVIEW"
+    detail = success if passed else failure
+    return f"[{status}] {name}: {detail}"

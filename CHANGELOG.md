@@ -9,4 +9,5 @@ All notable changes to OSS Maintainer Radar are documented here.
 - Added conservative Codex for Open Source application drafts.
 - Added Codex prompt generation for triage, PR review, and release readiness.
 - Added combined submission-pack generation for application prep.
+- Added readiness self-checks for public evidence, maintenance surface, and application risks.
 - Added tests, documentation, issue templates, CI, and maintainer automation workflow.

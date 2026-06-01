@@ -84,6 +84,28 @@ class CliTests(unittest.TestCase):
             self.assertIn("Evidence Report", text)
             self.assertIn("Codex Workflow Prompts", text)
 
+    def test_readiness_flags_review_items_for_new_projects(self) -> None:
+        fixture = Path(__file__).resolve().parents[1] / "examples" / "new_project_payload.json"
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "readiness.md"
+            status = main(
+                [
+                    "readiness",
+                    "--fixture",
+                    str(fixture),
+                    "--role",
+                    "primary",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Codex for Open Source Readiness", text)
+            self.assertIn("[REVIEW] Adoption evidence", text)
+            self.assertIn("not a guarantee", text)
+
 
 if __name__ == "__main__":
     unittest.main()
