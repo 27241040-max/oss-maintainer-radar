@@ -1,6 +1,6 @@
 # Maintainer Radar: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T08:02:37.089684+00:00
+Generated: 2026-06-01T08:18:03.094169+00:00
 Window start: not set
 
 ## Repository
@@ -23,11 +23,11 @@ Window start: not set
 - Pull requests in sample: 3
 - Open pull requests in sample: 0
 - Pull requests awaiting attention: 0
-- Release records in sample: 10
+- Release records in sample: 11
 
 ## Label Mix
 
-- enhancement: 1
+- No labels found in the open issue sample.
 
 ## Stale Issues
 
@@ -39,7 +39,7 @@ Window start: not set
 
 ## Release Notes
 
-- Latest published release is v0.8.0.
+- Latest published release is v0.9.0.
 - Recent completed pull requests to review for notes: #1 Bump actions/checkout from 4 to 6, #2 Bump actions/upload-artifact from 4 to 7, #3 Bump actions/setup-python from 5 to 6.
 
 ## Release Note Groups
@@ -55,7 +55,7 @@ Window start: not set
 - Repository signals: 0 stars, 0 forks, 1 open GitHub issues.
 - Adoption signals are still early; do not overstate usage.
 - Sample includes 3 pull request(s), showing active review surface.
-- Sample includes 10 release record(s), showing release management surface.
+- Sample includes 11 release record(s), showing release management surface.
 
 ## Application Risks
 
