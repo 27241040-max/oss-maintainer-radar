@@ -87,6 +87,7 @@ oss-radar audit --repo owner/repo --format json --output reports/week-1.json
 oss-radar audit --repo owner/repo --format json --output reports/week-2.json
 oss-radar validate-report reports/week-1.json reports/week-2.json
 oss-radar trend reports/week-1.json reports/week-2.json --output reports/trend.md
+oss-radar trend reports/week-1.json reports/week-2.json --format csv --output reports/trend.csv
 ```
 
 Use trend reports to:
@@ -94,4 +95,5 @@ Use trend reports to:
 - validate saved reports before comparing them
 - compare saved reports from the same repository
 - review changes in open issues, stale issues, review backlog, releases, risks, and scorecard score
+- save CSV rows for spreadsheet or dashboard review without parsing Markdown
 - avoid turning trend deltas into adoption or ecosystem-importance claims

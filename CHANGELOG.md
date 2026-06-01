@@ -2,6 +2,13 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.10.0 - 2026-06-01
+
+- Added CSV output for `oss-radar trend` with `--format csv`.
+- Included repository, first snapshot, latest snapshot, metric name, values, delta, and direction in trend CSV rows.
+- Added improving and worsening CSV trend tests.
+- Documented saving CSV trend summaries next to downloaded workflow artifacts.
+
 ## 0.9.0 - 2026-06-01
 
 - Added a `validate-report` command for checking generated JSON reports against `schemas/maintainer-report.schema.json`.

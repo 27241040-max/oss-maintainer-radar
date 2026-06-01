@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 import tempfile
 import unittest
@@ -279,6 +280,56 @@ class CliTests(unittest.TestCase):
             self.assertIn("Stale issues: 0 -> 2 (+2, worsened)", text)
             self.assertIn("Risk count: 0 -> 2 (+2, worsened)", text)
             self.assertIn("Scorecard score: 90 -> 65 (-25, worsened)", text)
+
+    def test_trend_csv_reports_improving_saved_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.csv"
+            _write_report(first, open_issues=8, stale_issues=3, review_backlog=2, releases=1, risks=2, score=55)
+            _write_report(latest, open_issues=4, stale_issues=1, review_backlog=0, releases=2, risks=1, score=75)
+
+            status = main(["trend", str(first), str(latest), "--format", "csv", "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            rows = list(csv.DictReader(output.read_text(encoding="utf-8").splitlines()))
+            self.assertEqual(len(rows), 6)
+            self.assertEqual(
+                rows[0],
+                {
+                    "repository": "example/repo",
+                    "first_snapshot": str(first),
+                    "latest_snapshot": str(latest),
+                    "metric_name": "Open issues",
+                    "first_value": "8",
+                    "latest_value": "4",
+                    "delta": "-4",
+                    "direction": "improved",
+                },
+            )
+            release_row = rows[3]
+            self.assertEqual(release_row["metric_name"], "Release count")
+            self.assertEqual(release_row["delta"], "1")
+            self.assertEqual(release_row["direction"], "improved")
+
+    def test_trend_csv_reports_worsening_saved_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            first = Path(tmp) / "first.json"
+            latest = Path(tmp) / "latest.json"
+            output = Path(tmp) / "trend.csv"
+            _write_report(first, open_issues=2, stale_issues=0, review_backlog=0, releases=2, risks=0, score=90)
+            _write_report(latest, open_issues=5, stale_issues=2, review_backlog=1, releases=2, risks=2, score=65)
+
+            status = main(["trend", str(first), str(latest), "--format", "csv", "--output", str(output)])
+
+            self.assertEqual(status, 0)
+            rows = {row["metric_name"]: row for row in csv.DictReader(output.read_text(encoding="utf-8").splitlines())}
+            self.assertEqual(rows["Open issues"]["delta"], "3")
+            self.assertEqual(rows["Open issues"]["direction"], "worsened")
+            self.assertEqual(rows["Release count"]["delta"], "0")
+            self.assertEqual(rows["Release count"]["direction"], "unchanged")
+            self.assertEqual(rows["Scorecard score"]["delta"], "-25")
+            self.assertEqual(rows["Scorecard score"]["direction"], "worsened")
 
     def test_validate_report_passes_generated_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

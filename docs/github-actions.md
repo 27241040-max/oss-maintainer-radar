@@ -18,6 +18,7 @@ It can:
 - upload the generated files as a workflow artifact
 - provide JSON artifacts that can be validated with `oss-radar validate-report`
 - provide JSON artifacts that can be compared later with `oss-radar trend`
+- provide CSV trend rows for spreadsheet or dashboard review
 
 The workflow uses `GITHUB_TOKEN` only for GitHub API rate limits. It does not
 print the token or commit generated reports back to the repository.

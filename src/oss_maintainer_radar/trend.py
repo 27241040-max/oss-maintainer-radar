@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+import csv
 import json
+from io import StringIO
 from pathlib import Path
 from typing import Any
+
+
+TREND_METRICS = [
+    ("Open issues", "open_issues", "lower"),
+    ("Stale issues", "stale_issues", "lower"),
+    ("Review backlog", "review_backlog", "lower"),
+    ("Release count", "release_count", "higher"),
+    ("Risk count", "risk_count", "lower"),
+    ("Scorecard score", "score", "higher"),
+]
 
 
 def trend_report(paths: list[Path]) -> str:
@@ -33,15 +45,7 @@ def trend_report(paths: list[Path]) -> str:
     lines.extend(["", "## Changes", ""])
     first = snapshots[0]
     latest = snapshots[-1]
-    metrics = [
-        ("Open issues", "open_issues", "lower"),
-        ("Stale issues", "stale_issues", "lower"),
-        ("Review backlog", "review_backlog", "lower"),
-        ("Release count", "release_count", "higher"),
-        ("Risk count", "risk_count", "lower"),
-        ("Scorecard score", "score", "higher"),
-    ]
-    for name, key, preferred in metrics:
+    for name, key, preferred in TREND_METRICS:
         lines.append(f"- {name}: {_change_line(first[key], latest[key], preferred)}")
 
     lines.extend(
@@ -55,6 +59,45 @@ def trend_report(paths: list[Path]) -> str:
         ]
     )
     return "\n".join(lines) + "\n"
+
+
+def trend_csv(paths: list[Path]) -> str:
+    if len(paths) < 2:
+        raise ValueError("trend requires at least two JSON report files")
+
+    snapshots = [_load_trend_snapshot(path) for path in paths]
+    first = snapshots[0]
+    latest = snapshots[-1]
+    output = StringIO()
+    writer = csv.DictWriter(
+        output,
+        fieldnames=[
+            "repository",
+            "first_snapshot",
+            "latest_snapshot",
+            "metric_name",
+            "first_value",
+            "latest_value",
+            "delta",
+            "direction",
+        ],
+    )
+    writer.writeheader()
+    for name, key, preferred in TREND_METRICS:
+        delta = latest[key] - first[key]
+        writer.writerow(
+            {
+                "repository": latest["repository"],
+                "first_snapshot": first["path"],
+                "latest_snapshot": latest["path"],
+                "metric_name": name,
+                "first_value": first[key],
+                "latest_value": latest[key],
+                "delta": delta,
+                "direction": _direction(delta, preferred),
+            }
+        )
+    return output.getvalue()
 
 
 def _load_trend_snapshot(path: Path) -> dict[str, Any]:
@@ -86,12 +129,15 @@ def _int_field(payload: dict[str, Any], key: str, *, list_count: bool = False) -
 
 def _change_line(first: int, latest: int, preferred: str) -> str:
     delta = latest - first
-    if delta == 0:
-        direction = "unchanged"
-    elif (preferred == "lower" and delta < 0) or (preferred == "higher" and delta > 0):
-        direction = "improved"
-    else:
-        direction = "worsened"
-
+    direction = _direction(delta, preferred)
     signed = f"+{delta}" if delta > 0 else str(delta)
     return f"{first} -> {latest} ({signed}, {direction})"
+
+
+def _direction(delta: int, preferred: str) -> str:
+    if delta == 0:
+        return "unchanged"
+    elif (preferred == "lower" and delta < 0) or (preferred == "higher" and delta > 0):
+        return "improved"
+    else:
+        return "worsened"

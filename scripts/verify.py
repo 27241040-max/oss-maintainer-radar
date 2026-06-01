@@ -121,6 +121,21 @@ def main() -> int:
             stdout=subprocess.DEVNULL,
             pythonpath=True,
         )
+        run(
+            "trend CSV",
+            [
+                sys.executable,
+                "-m",
+                "oss_maintainer_radar.cli",
+                "trend",
+                str(report),
+                str(report),
+                "--format",
+                "csv",
+            ],
+            stdout=subprocess.DEVNULL,
+            pythonpath=True,
+        )
 
     with tempfile.TemporaryDirectory(prefix="oss-radar-verify-") as tmp:
         tmp_path = Path(tmp)
@@ -161,6 +176,12 @@ def main() -> int:
         run(
             "wheel CLI validate report",
             [str(wheel_cli), "validate-report", str(wheel_report)],
+            stdout=subprocess.DEVNULL,
+            cwd=tmp_path,
+        )
+        run(
+            "wheel CLI trend CSV",
+            [str(wheel_cli), "trend", str(wheel_report), str(wheel_report), "--format", "csv"],
             stdout=subprocess.DEVNULL,
             cwd=tmp_path,
         )
