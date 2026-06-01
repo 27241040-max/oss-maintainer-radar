@@ -20,6 +20,7 @@ Run:
 ```bash
 oss-radar audit --repo owner/repo --output reports/application-evidence.md
 oss-radar application --repo owner/repo --role primary --output reports/application-draft.md
+oss-radar form-fields --repo owner/repo --role primary --output reports/form-fields.md
 oss-radar submission-pack --repo owner/repo --role primary --output reports/submission-pack.md
 oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
@@ -41,6 +42,7 @@ file:
 Then pass it to the commands:
 
 ```bash
+oss-radar form-fields --repo owner/repo --evidence evidence.json --role primary --output reports/form-fields.md
 oss-radar submission-pack --repo owner/repo --evidence evidence.json --role primary --output reports/submission-pack.md
 oss-radar readiness --repo owner/repo --evidence evidence.json --role primary --output reports/readiness.md
 ```

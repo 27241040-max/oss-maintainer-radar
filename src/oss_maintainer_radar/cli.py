@@ -9,6 +9,7 @@ from .github import fetch_snapshot, load_evidence, load_snapshot
 from .render import (
     application_draft,
     codex_prompts,
+    form_fields,
     readiness_check,
     report_to_json,
     report_to_markdown,
@@ -30,6 +31,8 @@ def main(argv: list[str] | None = None) -> int:
             output = application_draft(report, role=args.role)
         elif args.command == "codex-prompts":
             output = codex_prompts(report)
+        elif args.command == "form-fields":
+            output = form_fields(report, role=args.role)
         elif args.command == "submission-pack":
             output = submission_pack(report, role=args.role)
         elif args.command == "readiness":
@@ -66,6 +69,12 @@ def build_parser() -> argparse.ArgumentParser:
         subparsers.add_parser("codex-prompts", help="Generate Codex prompts for maintainer workflows.")
     )
     prompts.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
+
+    fields = _add_snapshot_args(
+        subparsers.add_parser("form-fields", help="Generate copy-paste fields for the Codex for OSS form.")
+    )
+    fields.add_argument("--role", choices=["primary", "core"], default="primary")
+    fields.add_argument("--output", type=Path, help="Write output to a file instead of stdout.")
 
     pack = _add_snapshot_args(
         subparsers.add_parser("submission-pack", help="Generate a combined Codex for OSS submission pack.")

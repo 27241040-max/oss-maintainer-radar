@@ -82,8 +82,31 @@ class CliTests(unittest.TestCase):
             self.assertTrue(text.startswith("# Codex for Open Source Submission Pack"))
             self.assertIn("Codex for Open Source Submission Pack", text)
             self.assertIn("Application Draft", text)
+            self.assertIn("Form Fields", text)
             self.assertIn("Evidence Report", text)
             self.assertIn("Codex Workflow Prompts", text)
+
+    def test_form_fields_include_character_counts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "form-fields.md"
+            status = main(
+                [
+                    "form-fields",
+                    "--fixture",
+                    str(FIXTURE),
+                    "--role",
+                    "primary",
+                    "--output",
+                    str(output),
+                ]
+            )
+
+            self.assertEqual(status, 0)
+            text = output.read_text(encoding="utf-8")
+            self.assertIn("Codex for Open Source Form Fields", text)
+            self.assertIn("## Public GitHub repository URL", text)
+            self.assertIn("Character count:", text)
+            self.assertIn("<fill manually>", text)
 
     def test_readiness_flags_review_items_for_new_projects(self) -> None:
         fixture = Path(__file__).resolve().parents[1] / "examples" / "new_project_payload.json"

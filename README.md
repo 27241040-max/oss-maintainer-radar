@@ -60,6 +60,12 @@ Create a combined submission pack:
 oss-radar submission-pack --fixture examples/sample_github_payload.json --role primary --output reports/submission-pack.md
 ```
 
+Generate copy-paste form fields with character counts:
+
+```bash
+oss-radar form-fields --fixture examples/sample_github_payload.json --role primary
+```
+
 Add manually verified evidence such as downloads, dependents, or ecosystem notes:
 
 ```bash
@@ -119,6 +125,7 @@ Use this tool to prepare an accurate application:
 4. Submit only public repositories and roles you can verify.
 
 For one combined file, run `oss-radar submission-pack --repo owner/repo --role primary`.
+For copy-paste fields, run `oss-radar form-fields --repo owner/repo --role primary`.
 For a risk-oriented self-check, run `oss-radar readiness --repo owner/repo --role primary`.
 If you have verified downloads, dependents, or ecosystem-importance evidence, put it in a JSON file shaped like `examples/evidence.json` and pass `--evidence path/to/evidence.json`.
 

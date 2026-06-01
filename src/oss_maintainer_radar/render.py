@@ -74,6 +74,34 @@ def report_to_markdown(report: MaintainerReport) -> str:
 
 
 def application_draft(report: MaintainerReport, *, role: str) -> str:
+    fields = form_field_values(report, role=role)
+
+    return textwrap.dedent(
+        f"""\
+        # Codex for Open Source Application Draft
+
+        These drafts are intentionally conservative. Edit them before submitting.
+
+        ## Describe Your Role
+
+        {fields["Describe your role"]}
+
+        ## Why Does This Repository Qualify? (<=500 chars)
+
+        {fields["Why does this repository qualify?"]}
+
+        ## How Will You Use API Credits? (<=500 chars)
+
+        {fields["How will you use API credits?"]}
+
+        ## Anything Else? (<=500 chars)
+
+        {fields["Anything else?"]}
+        """
+    )
+
+
+def form_field_values(report: MaintainerReport, *, role: str) -> dict[str, str]:
     evidence_clauses = _application_evidence_clauses(report)
     qualifies = _fit_500(
         " ".join(
@@ -93,29 +121,56 @@ def application_draft(report: MaintainerReport, *, role: str) -> str:
         "All application claims should be checked against public GitHub data before submission. Do not claim adoption, permissions, or ecosystem impact that cannot be verified."
     )
 
-    return textwrap.dedent(
-        f"""\
-        # Codex for Open Source Application Draft
+    return {
+        "First name": "<fill manually>",
+        "Last name": "<fill manually>",
+        "Email associated with your ChatGPT account": "<fill manually>",
+        "Public GitHub username": "<fill manually>",
+        "Public GitHub repository URL": report.repository.url or "<publish repository first>",
+        "Maintainer role": f"{role} maintainer",
+        "Describe your role": f"{role.title()} maintainer. I triage issues, review pull requests, manage releases, and help preserve project quality.",
+        "Why does this repository qualify?": qualifies,
+        "Interest": "API credits",
+        "OpenAI organization ID": "<fill manually>",
+        "How will you use API credits?": credits,
+        "Anything else?": anything_else,
+    }
 
-        These drafts are intentionally conservative. Edit them before submitting.
 
-        ## Describe Your Role
+def form_fields(report: MaintainerReport, *, role: str) -> str:
+    fields = form_field_values(report, role=role)
+    limited_fields = {
+        "Why does this repository qualify?",
+        "How will you use API credits?",
+        "Anything else?",
+    }
 
-        {role.title()} maintainer. I triage issues, review pull requests, manage releases, and help preserve project quality.
+    lines = [
+        "# Codex for Open Source Form Fields",
+        "",
+        "Review every field before submitting. This output does not guarantee selection.",
+        "",
+    ]
 
-        ## Why Does This Repository Qualify? (<=500 chars)
+    for label, value in fields.items():
+        lines.extend([f"## {label}", "", value])
+        if label in limited_fields:
+            lines.append("")
+            lines.append(f"Character count: {len(value)}/500")
+        lines.append("")
 
-        {qualifies}
-
-        ## How Will You Use API Credits? (<=500 chars)
-
-        {credits}
-
-        ## Anything Else? (<=500 chars)
-
-        {anything_else}
-        """
+    lines.extend(
+        [
+            "## Before Submit",
+            "",
+            "- Replace every `<fill manually>` value.",
+            "- Rerun against the live public repository, not a fixture.",
+            "- Check readiness output for REVIEW items.",
+            "- Confirm source URLs for any manual evidence.",
+        ]
     )
+
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def codex_prompts(report: MaintainerReport) -> str:
@@ -167,6 +222,10 @@ def submission_pack(report: MaintainerReport, *, role: str) -> str:
         "## Application Draft",
         "",
         application_draft(report, role=role).strip(),
+        "",
+        "## Form Fields",
+        "",
+        form_fields(report, role=role).strip(),
         "",
         "## Evidence Report",
         "",

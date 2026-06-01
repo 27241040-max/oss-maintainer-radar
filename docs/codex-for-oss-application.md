@@ -41,6 +41,7 @@ Run:
 ```bash
 oss-radar audit --repo owner/repo --output reports/owner-repo.md
 oss-radar application --repo owner/repo --role primary --output reports/application.md
+oss-radar form-fields --repo owner/repo --role primary --output reports/form-fields.md
 oss-radar codex-prompts --repo owner/repo --output reports/codex-prompts.md
 oss-radar readiness --repo owner/repo --role primary --output reports/readiness.md
 ```
