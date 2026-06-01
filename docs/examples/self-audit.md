@@ -1,6 +1,6 @@
 # Maintainer Radar: 27241040-max/oss-maintainer-radar
 
-Generated: 2026-06-01T07:27:12.733072+00:00
+Generated: 2026-06-01T07:36:25.966011+00:00
 Window start: not set
 
 ## Repository
@@ -26,8 +26,7 @@ Window start: not set
 
 ## Label Mix
 
-- documentation: 1
-- good first issue: 1
+- enhancement: 1
 
 ## Stale Issues
 
