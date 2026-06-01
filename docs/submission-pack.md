@@ -1,6 +1,8 @@
 # Codex for Open Source Submission Pack
 
 Use this page after the project is published as a public GitHub repository.
+For the last-mile publishing and private-field checklist, see
+`docs/final-submission-checklist.md`.
 
 ## Required User-Specific Values
 

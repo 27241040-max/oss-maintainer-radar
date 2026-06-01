@@ -136,6 +136,8 @@ See [docs/submission-pack.md](docs/submission-pack.md) for a submission prep
 template and [docs/github-actions.md](docs/github-actions.md) for a scheduled
 maintainer automation example.
 See [docs/package-release.md](docs/package-release.md) for package build checks.
+See [docs/final-submission-checklist.md](docs/final-submission-checklist.md)
+for the last-mile publish and form-filling checklist.
 
 ## Maintainer Automation Ideas
 

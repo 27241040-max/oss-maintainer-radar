@@ -3,6 +3,9 @@
 This checklist helps maintainers prepare a truthful application for the Codex
 for Open Source program.
 
+For the final publish-and-submit handoff checklist, see
+`docs/final-submission-checklist.md`.
+
 ## Program Fit
 
 The public program pages say reviewers look for:

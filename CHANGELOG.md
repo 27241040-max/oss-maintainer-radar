@@ -14,4 +14,5 @@ All notable changes to OSS Maintainer Radar are documented here.
 - Added optional JSON evidence files for downloads, dependents, ecosystem importance, and source URLs.
 - Added package build documentation and CI package-build verification.
 - Added a local verification script for tests, CLI smoke checks, sdist inspection, and wheel installation.
+- Added a final submission checklist for public repo publishing and private form fields.
 - Added tests, documentation, issue templates, CI, and maintainer automation workflow.
