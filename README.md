@@ -113,6 +113,10 @@ Fetch a public GitHub repository and audit it:
 oss-radar audit --repo psf/requests
 ```
 
+If direct Python GitHub API requests fail because of local TLS certificate
+configuration, the CLI automatically tries `gh api` when the GitHub CLI is
+installed and authenticated.
+
 Limit a report to a release window:
 
 ```bash
@@ -127,7 +131,7 @@ token is never printed.
 Use OSS Maintainer Radar directly in another repository:
 
 ```yaml
-- uses: 27241040-max/oss-maintainer-radar@v0.5.0
+- uses: 27241040-max/oss-maintainer-radar@v0.5.1
   with:
     github_token: ${{ github.token }}
     output_dir: reports

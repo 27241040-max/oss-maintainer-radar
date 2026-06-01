@@ -2,6 +2,12 @@
 
 All notable changes to OSS Maintainer Radar are documented here.
 
+## 0.5.1 - 2026-06-01
+
+- Added an optional `gh api` fallback when direct GitHub API requests fail because of local TLS or network transport issues.
+- Added coverage for the GitHub CLI fallback path.
+- Documented the fallback behavior for maintainers running live repository audits.
+
 ## 0.5.0 - 2026-06-01
 
 - Added `--since` release-window filtering for issue, pull request, and release evidence.

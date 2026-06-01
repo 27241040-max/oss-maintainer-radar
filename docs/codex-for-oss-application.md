@@ -56,6 +56,10 @@ claims that have public source URLs.
 For private applicant fields, copy `examples/applicant.example.json` to ignored
 `applicant.json`, edit it locally, and pass `--applicant applicant.json`.
 
+For live `--repo` audits, the CLI uses direct GitHub API requests first. If
+local TLS certificate configuration blocks those requests, it falls back to
+`gh api` when the GitHub CLI is installed and authenticated.
+
 Then check every generated claim:
 
 - Do you actually have maintainer permissions?

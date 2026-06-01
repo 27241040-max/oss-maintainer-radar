@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -85,6 +86,42 @@ def _github_get(path: str, token: str | None) -> Any:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"GitHub API request failed with {exc.code}: {detail}") from exc
+        return _github_get_with_fallback(path, token, f"GitHub API request failed with {exc.code}: {detail}", exc)
     except urllib.error.URLError as exc:
-        raise RuntimeError(f"GitHub API request failed: {exc.reason}") from exc
+        return _github_get_with_fallback(path, token, f"GitHub API request failed: {exc.reason}", exc)
+
+
+def _github_get_with_fallback(path: str, token: str | None, message: str, cause: Exception) -> Any:
+    try:
+        return _github_get_with_gh(path, token)
+    except RuntimeError as fallback_exc:
+        raise RuntimeError(f"{message}; gh api fallback failed: {fallback_exc}") from cause
+
+
+def _github_get_with_gh(path: str, token: str | None) -> Any:
+    env = os.environ.copy()
+    if token and "GITHUB_TOKEN" not in env and "GH_TOKEN" not in env:
+        env["GITHUB_TOKEN"] = token
+
+    try:
+        completed = subprocess.run(
+            ["gh", "api", path],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=20,
+            env=env,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError("GitHub CLI `gh` is not installed") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError("GitHub CLI `gh api` timed out") from exc
+
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip() or f"exit code {completed.returncode}"
+        raise RuntimeError(detail)
+
+    try:
+        return json.loads(completed.stdout)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("GitHub CLI `gh api` returned invalid JSON") from exc

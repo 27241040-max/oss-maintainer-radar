@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - uses: 27241040-max/oss-maintainer-radar@v0.5.0
+      - uses: 27241040-max/oss-maintainer-radar@v0.5.1
         with:
           github_token: ${{ github.token }}
           output_dir: reports
